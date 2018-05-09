@@ -40,12 +40,12 @@ export class CompassPage {
 
   ngOnInit() {
     this.listenerFn = this.renderer.listen('window', 'deviceorientation', (evt) => {
-                        console.log('deviceorientation', evt);
+                        //console.log('deviceorientation', evt);
                         this.event = evt;
                         this.deviceOrientation.getCurrentHeading().then(
                           (data1: DeviceOrientationCompassHeading) => {
                             this.magneticHeading=data1.magneticHeading;
-                            console.log(this.magneticHeading);
+                           // console.log(this.magneticHeading);
                             
                           },
                           (error: any) => console.log(error+" - error message")
