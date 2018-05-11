@@ -7,26 +7,34 @@ import { DeviceOrientation } from '@ionic-native/device-orientation';
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
 import { Geolocation } from '@ionic-native/geolocation';
 import { GoogleMaps } from "@ionic-native/google-maps";
+import { Vibration } from "@ionic-native/vibration";
+import { EmbedVideo } from 'ngx-embed-video';
+import { HttpModule } from '@angular/http';
 
 import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { CompassPage } from '../pages/compass/compass';
+import { VideoPage } from '../pages/video/video';
 
 @NgModule({
   declarations: [
     MyApp,
     HomePage,
-    CompassPage
+    CompassPage,
+    VideoPage
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(MyApp)
+    HttpModule,
+    IonicModule.forRoot(MyApp),
+    EmbedVideo.forRoot()
   ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
     HomePage,
-    CompassPage
+    CompassPage,
+    VideoPage
   ],
   providers: [
     StatusBar,
@@ -35,6 +43,7 @@ import { CompassPage } from '../pages/compass/compass';
     ScreenOrientation,
     Geolocation,
     GoogleMaps,
+    Vibration,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })
