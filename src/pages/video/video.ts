@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import { EmbedVideoService } from 'ngx-embed-video';
 
-@IonicPage()
 @Component({
     selector: 'page-video',
     templateUrl: 'video.html',

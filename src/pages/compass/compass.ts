@@ -9,7 +9,7 @@ import { DeviceOrientation, DeviceOrientationCompassHeading } from '@ionic-nativ
  * Ionic pages and navigation.
  */
 
-@IonicPage()
+
 @Component({
   selector: 'page-compass',
   templateUrl: 'compass.html',
