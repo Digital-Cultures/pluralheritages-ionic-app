@@ -19,6 +19,7 @@ import {
 import { greatCircle, point, polygon, destination, booleanPointInPolygon } from '@turf/turf';
 import { Vibration } from '@ionic-native/vibration';
 import { EmbedVideoService } from 'ngx-embed-video';
+import { RestRouteProvider } from '../../providers/rest-route/rest-route';
 
 @Component({
   selector: 'page-home',
@@ -51,7 +52,8 @@ export class HomePage {
     private deviceOrientation: DeviceOrientation,
     private screenOrientation: ScreenOrientation,
     private vibration: Vibration,
-    private embedService: EmbedVideoService
+    private embedService: EmbedVideoService,
+    public restRouteProvider: RestRouteProvider
   ) {
     // this.turfObj = new turf();
     // console.log(turf.greatCircle([0, 0], [100, 10]));
@@ -86,7 +88,7 @@ export class HomePage {
         tilt: 30
       },
       gestures: {
-        scroll: false
+      //  scroll: false
       }
     });
 
@@ -94,15 +96,44 @@ export class HomePage {
     this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
       this.mapReady = true;
 
+      let routeRaw = this.restRouteProvider.getRoute();
+      let path = [];
+      for (let i = 0; i < routeRaw.length; i++) {
+        // this.map.addMarker({
+        //   title: 'Play',
+        //   snippet: 'play sound clip',
+        //   position: { lat: routeRaw[i][1], lng: routeRaw[i][0] }
+        // }) 
+        path.push({"lat": routeRaw[i][1], "lng": routeRaw[i][0]})
+      }
+      
+      this.map.addPolyline({
+        points: path,
+        'color' : '#AA00FF',
+        'width': 5,
+        'geodesic': true
+      });
+    
       setInterval(() => {
         if (Math.round(this.magneticHeading) != this.map.getCameraBearing()) {
           this.onHeadingChange(this.magneticHeading);
         }
       }, 20);
 
+
       setInterval(() => {
-        this.updateLocation();
-      }, 20000);
+        if (Math.round(this.magneticHeading) != this.map.getCameraBearing()) {
+          this.onHeadingChange(this.magneticHeading);
+        }
+      }, 20);
+
+      this.geolocation.watchPosition({ maximumAge: 3000, timeout: 5000, enableHighAccuracy: true }).subscribe(position => {
+        this.updateLocation(position);
+      });
+      
+      // setInterval(() => {
+      //   this.updateLocation();
+      // }, 20000);
 
     });
   }
@@ -203,24 +234,21 @@ export class HomePage {
     }
   }
 
-  onButtonClick() {
-    this.updateLocation();
-  }
+  // onButtonClick() {
+  //   this.updateLocation();
+  // }
 
-  updateLocation() {
+  updateLocation(position) {
     if (!this.mapReady) {
       this.showToast('map is not ready yet. Please try again.');
       return;
     }
     // Get the location of you
-    this.geolocation.getCurrentPosition()
-      .then((location) => {
-        this.locationFix = true;
-        this.location = {
-          lat: location.coords.latitude,
-          lng: location.coords.longitude
-        };
-      })
+      this.locationFix = true;
+      this.location = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
   }
 
   showToast(message: string) {

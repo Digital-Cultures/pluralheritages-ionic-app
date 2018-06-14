@@ -4,8 +4,10 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { HomePage } from '../pages/home/home';
+import { DemoAppPage } from '../pages/demoApp/demoApp';
 import { CompassPage } from '../pages/compass/compass';
 import { VideoPage } from '../pages/video/video';
+import { RestRouteProvider } from '../providers/rest-route/rest-route';
 
 @Component({
   templateUrl: 'app.html'
@@ -18,11 +20,16 @@ export class MyApp {
 
   pages: Array<{title: string, component: any}>;
 
-  constructor(public platform: Platform, public statusBar: StatusBar, public splashScreen: SplashScreen) {
+  constructor(
+    public platform: Platform, 
+    public statusBar: StatusBar, 
+    public splashScreen: SplashScreen,
+    public restRouteProvider: RestRouteProvider) {
     this.initializeApp();
 
     this.pages = [
       { title: 'Home', component: HomePage },
+      { title: 'App', component: DemoAppPage },
       { title: 'Compass', component: CompassPage },
       { title: 'Video', component: VideoPage }
     ]
@@ -39,6 +46,10 @@ export class MyApp {
   }
   openPage(page) {
     this.nav.setRoot(page.component);
+  }
+
+  radioChecked(value){
+    this.restRouteProvider.setRoute(value);
   }
 }
 

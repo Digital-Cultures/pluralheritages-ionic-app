@@ -12,13 +12,16 @@ import { EmbedVideo } from 'ngx-embed-video';
 import { HttpModule } from '@angular/http';
 
 import { MyApp } from './app.component';
+import { DemoAppPage } from '../pages/demoApp/demoApp';
 import { HomePage } from '../pages/home/home';
 import { CompassPage } from '../pages/compass/compass';
 import { VideoPage } from '../pages/video/video';
+import { RestRouteProvider } from '../providers/rest-route/rest-route';
 
 @NgModule({
   declarations: [
     MyApp,
+    DemoAppPage,
     HomePage,
     CompassPage,
     VideoPage
@@ -32,6 +35,7 @@ import { VideoPage } from '../pages/video/video';
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
+    DemoAppPage,
     HomePage,
     CompassPage,
     VideoPage
@@ -44,7 +48,8 @@ import { VideoPage } from '../pages/video/video';
     Geolocation,
     GoogleMaps,
     Vibration,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    RestRouteProvider
   ]
 })
 export class AppModule {}

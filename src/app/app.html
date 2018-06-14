@@ -11,6 +11,26 @@
           {{p.title}}
         </button>
       </ion-list>
+
+      <ion-title>Route</ion-title>
+      <ion-list radio-group>
+        <ion-item>
+          <ion-label>Tomo Bey</ion-label>
+          <ion-radio value="0" checked (ionSelect)="radioChecked(0)"></ion-radio>
+        </ion-item>
+        <ion-item>
+          <ion-label>Cem</ion-label>
+          <ion-radio value="1" (ionSelect)="radioChecked(1)"></ion-radio>
+        </ion-item>
+        <ion-item>
+          <ion-label>Yorgo</ion-label>
+          <ion-radio value="2" (ionSelect)="radioChecked(2)"></ion-radio>
+        </ion-item>
+        <ion-item>
+          <ion-label>Yucel-Hatice</ion-label>
+          <ion-radio value="3" (ionSelect)="radioChecked(3)"></ion-radio>
+        </ion-item>
+      </ion-list>
     </ion-content>
   
   </ion-menu>
