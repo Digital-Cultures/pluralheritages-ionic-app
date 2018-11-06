@@ -48,8 +48,10 @@
     "es6-promise-plugin": "^4.2.2",
     "ionic-angular": "3.9.2",
     "ionicons": "3.0.0",
+    "ng-lottie": "^0.3.1",
     "ngx-embed-video": "github:danfs/ngx-embed-video",
     "rxjs": "5.5.10",
+    "save": "^2.3.2",
     "sw-toolbox": "3.6.0",
     "zone.js": "0.8.26"
   },

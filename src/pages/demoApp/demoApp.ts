@@ -37,7 +37,6 @@ export class DemoAppPage {
   distance: number;
   checkpoint: number = 0;
   routeRaw: any[];
-  mapReady: boolean = false;
 
   accuracy: number;
   heading: number;
@@ -134,8 +133,8 @@ export class DemoAppPage {
 
   getBearing() {
     let routeRaw = this.restRouteProvider.getRoute();
-    let targetLng: number = routeRaw[this.checkpoint][0];
-    let targetLat: number = routeRaw[this.checkpoint][1];
+    let targetLng: number = routeRaw.path[this.checkpoint][0];
+    let targetLat: number = routeRaw.path[this.checkpoint][1];
 
     let myLocation = point([this.location.lng, this.location.lat]);
     let targetLocation = point([targetLng, targetLat]);
@@ -147,8 +146,8 @@ export class DemoAppPage {
 
   getDistance() {
     let routeRaw = this.restRouteProvider.getRoute();
-    let targetLng: number = routeRaw[this.checkpoint][0];
-    let targetLat: number = routeRaw[this.checkpoint][1];
+    let targetLng: number = routeRaw.path[this.checkpoint][0];
+    let targetLat: number = routeRaw.path[this.checkpoint][1];
 
 
     let myLocation = point([this.location.lng, this.location.lat]);

@@ -1,3 +1,8 @@
+<div *ngIf="showSplash" class="splash">
+  <lottie-animation-view
+        [options]="interactiveAnimationOption"></lottie-animation-view>
+</div>
+
 <ion-menu [content]="content">
     <ion-header>
       <ion-toolbar>
@@ -6,13 +11,44 @@
     </ion-header>
   
     <ion-content>
+    <ion-title>PLURAL HERITAGES</ion-title>
       <ion-list>
-        <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
-          {{p.title}}
-        </button>
+
+
+
+          <ion-row >
+            <!-- Parent Pages  -->
+            <ion-col col-12 class="menu-name" (click)="openPage(pages[0], 0, false)">
+              <ion-item>
+                <span ion-text>
+                  {{pages[0].title}}
+                </span>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+
+          <ion-row *ngFor="let p of pages; let i = index" >
+            <!-- Parent Pages  -->
+            <ion-col  *ngIf="i==pageID && i!=0" col-12 class="menu-name" (click)="openPage(p, i, false)">
+              <ion-item>
+                <span ion-text>
+                  {{p.title}}
+                  <ion-icon [name]="selectedMenu == i? 'arrow-down' : 'arrow-forward'" *ngIf="p.subPages" float-right></ion-icon>
+                </span>
+              </ion-item>
+
+              <!-- Child Pages  -->
+              <ion-list radio-group *ngIf="selectedMenu == i">
+                <ion-item no-border no-lines *ngFor="let subPage of p.subPages; let j = index" text-wrap >
+                    <ion-label>{{subPage.title}}</ion-label>
+                    <ion-radio id="{{i+' '+j}}" value="{{j}}" (ionSelect)="setRoute(i,j)" [checked]="selectedMenu == i && selectedWalk == j"></ion-radio>  
+                  </ion-item>
+                </ion-list>
+            </ion-col>
+          </ion-row>
       </ion-list>
 
-      <ion-title>Route</ion-title>
+      <!-- <ion-title>Route</ion-title>
       <ion-list radio-group>
         <ion-item>
           <ion-label>Tomo Bey</ion-label>
@@ -30,7 +66,7 @@
           <ion-label>Yucel-Hatice</ion-label>
           <ion-radio value="3" (ionSelect)="radioChecked(3)"></ion-radio>
         </ion-item>
-      </ion-list>
+      </ion-list> -->
     </ion-content>
   
   </ion-menu>

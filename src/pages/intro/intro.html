@@ -1,0 +1,24 @@
+<ion-header>
+    <ion-navbar>
+      <button ion-button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+      <ion-title>About the project</ion-title>
+    </ion-navbar>
+  </ion-header>
+  
+  <ion-content padding>
+    <h5 ion-text color="dark">Plural Heritages</h5>
+
+    <p>
+      The project has been developed to create new valorisations of the Istanbul Land (Theodosian) Walls, working with communities to co-produce both situated and web-based, public-facing digital heritage interpretation resources that reflect non-official, hitherto unauthorised understandings of the Walls and their environs. The project also builds capacity, in line with the aims of the Newton Fund, through modelling heritage management/interpretation practice, digital technologies and community engagement within the heritage sector.
+    </p>
+
+    <p>Please select a tour:</p>
+    <button ion-button round (click)="changeTour(1, 0)">WALKING BACK IN TIME</button><br>
+
+    <button ion-button round (click)="changeTour(2, 0)">WALKING TOUR</button><br>
+
+    <button ion-button round>VANTAGE POINT</button>
+
+  </ion-content>

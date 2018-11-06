@@ -1,0 +1,143 @@
+page-walking {
+    ion-title {
+        text-transform: capitalize;
+    }
+    ion-content {
+        padding: 0 !important;
+    }
+    #map_canvas {
+        height: 100%;
+        :first-child { 
+            pointer-events: none;
+        }
+      }
+
+    #over_map { 
+        position: absolute; 
+        top: 10px; 
+        left: 10px;
+        color: white;
+    }
+
+    .scroll-content {
+        padding: 0 !important;
+    }
+
+    .button-md {
+        border: 2px solid #FFA042;
+        background-color: #000000;
+        border-radius: 15px 15px 15px 0;
+        padding: 4px 10px;
+        z-index: 999;
+        text-transform: capitalize;
+    }
+
+    .grey{
+        border: 1px solid #999;
+        color: #999;
+    }
+
+    .red{
+        border: 2px solid rgb(255, 81, 50);
+    }
+
+    .white{
+        border: 2px solid #FFF;
+        color: #FFF;
+    }
+
+    .footerGuide {
+        align-items: center;
+        bottom: 10px;
+        color: white;
+        display: flex;
+        justify-content: center;
+        left: 10px;
+        position: absolute;
+        width: 100%;
+        z-index: 99;
+    }
+
+    .footerSwapTour {
+        align-items: center;
+        background-color: #FFA042;
+        border-radius: 8px;
+        bottom: 35px;
+        color: white;
+        display: flex;
+        font-weight: 500;
+        justify-content: center;
+        left: 5%;
+        padding: 20px 5px;
+        position: absolute;
+        text-align: center;
+        text-transform: uppercase;
+        width: 90%;
+        z-index: 999;
+    }
+
+    .modal{
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 1000;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        display: flex;
+        justify-content: center;
+        color: white;
+
+        h2, h5{
+            margin-top: 5px;
+        }
+        .userIcon{
+            width: 45px;
+            margin-top: 60px;
+        }
+
+        .minimise{
+            width: 30px;
+            margin-bottom: 5px;
+            float: left;
+            margin-left: 19px;
+        }
+
+        .holder{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            display: block;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .videoHolder{
+            background-color: white;
+            width: 90%;
+            bottom: 20px;
+            position: fixed;
+            border-radius: 5px;
+            margin: 0 0 0 20px;
+        }
+
+        .video{
+            width: 100%;
+            margin-top: 15px;
+
+            iframe{
+                height: 29vh;
+                width: 90%;
+            }
+        }
+
+        .closeBtn{
+            position: absolute;
+            color: white;
+            top: 10px;
+            right: 15px;
+            width: 20px;
+        }
+    }
+   
+}

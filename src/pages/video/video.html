@@ -9,4 +9,35 @@
   
   <ion-content padding>
     <div [innerHtml]="iframe_html"></div>
+
+    <lottie-animation-view
+        (animCreated)="handleAnimation($event)"
+        [options]="interactiveAnimationOption"></lottie-animation-view>
+
+
+      <ion-row align="center">
+      <ion-col col-4>
+        <button (click)="stop()" ion-button clear icon-only><ion-icon name="square"></ion-icon></button>
+      </ion-col>
+      <ion-col col-4>
+        <button (click)="pause()" ion-button clear icon-only><ion-icon name="pause"></ion-icon></button>
+      </ion-col>
+      <ion-col col-4>
+        <button (click)="play()" ion-button clear icon-only><ion-icon name="play"></ion-icon></button>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col-10>
+        <ion-item>
+          <ion-range min="0" max="5" pin (ionChange)="setSpeed()" [(ngModel)]="animationSpeed">
+            <ion-label range-left>0</ion-label>
+            <ion-label range-right>5</ion-label>
+          </ion-range>
+        </ion-item>
+      </ion-col>
+      <ion-col col-2 align-self-center>
+        <h3 text-center>{{animationSpeed}}x</h3>
+      </ion-col>
+    </ion-row>
+    
   </ion-content>

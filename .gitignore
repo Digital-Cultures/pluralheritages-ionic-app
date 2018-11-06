@@ -33,3 +33,6 @@ $RECYCLE.BIN/
 .DS_Store
 Thumbs.db
 UserInterfaceState.xcuserstate
+my-release-key.keystore
+app-release-unsigned.apk
+README.md
