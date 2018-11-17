@@ -33,12 +33,12 @@
               <ion-item>
                 <span ion-text>
                   {{p.title}}
-                  <ion-icon [name]="selectedMenu == i? 'arrow-down' : 'arrow-forward'" *ngIf="p.subPages" float-right></ion-icon>
+                  <ion-icon [name]="arrow-down" *ngIf="p.subPages" float-right></ion-icon>
                 </span>
               </ion-item>
 
               <!-- Child Pages  -->
-              <ion-list radio-group *ngIf="selectedMenu == i">
+              <ion-list radio-group >
                 <ion-item no-border no-lines *ngFor="let subPage of p.subPages; let j = index" text-wrap >
                     <ion-label>{{subPage.title}}</ion-label>
                     <ion-radio id="{{i+' '+j}}" value="{{j}}" (ionSelect)="setRoute(i,j)" [checked]="selectedMenu == i && selectedWalk == j"></ion-radio>  

@@ -511,7 +511,7 @@ export class WalkingPage {
                 tourID: k,
                 name: allRoutesRaw[k].name,
                 title: allRoutesRaw[k].points[i].title,
-                point: { left: Math.floor(point[0].toFixed(1)), top: Math.floor(point[1].toFixed(1))+5 },
+                point: { left: Math.floor(point[0].toFixed(1)), top: Math.floor(point[1].toFixed(1))-35 },
                 location: { lat: allRoutesRaw[k].points[i].lat, lng: allRoutesRaw[k].points[i].long },
                 vimeo: allRoutesRaw[k].points[i].vimeoID,
                 time: allRoutesRaw[k].points[i].time,
@@ -532,7 +532,7 @@ export class WalkingPage {
   updateLocationMarker() {
     if (this.locationFix) {
       this.map.fromLatLngToPoint({ lat: this.location.lat, lng: this.location.lng }).then((point: any[]) => {
-        this.mapLocationMarker = {left: Math.floor(point[0].toFixed(1)-35), top: Math.floor(point[1].toFixed(1))+20};
+        this.mapLocationMarker = {left: Math.floor(point[0].toFixed(1)-35), top: Math.floor(point[1].toFixed(1))-35};
       })
     }
   }
