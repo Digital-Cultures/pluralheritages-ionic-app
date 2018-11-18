@@ -16,7 +16,7 @@
 
     <div *ngFor="let mapLabel of mapLabels">
       <!-- <button [style.top.px]=mapLabel.point.top [style.left.px]=mapLabel.point.left style="position: fixed;" ion-button (click)="mapLabel.action($event)">{{mapLabel.title}}</button> -->
-      <button [style.top.px]=mapLabel.point.top [style.left.px]=mapLabel.point.left style="position: fixed;" ion-button [ngClass]="{ 'grey': !mapLabel.selected, 'white': mapLabel.swapTourAllowed, 'red': mapLabel.redColor}" (click)="playVideo(mapLabel.vimeo,mapLabel.time,mapLabel.endtime,mapLabel.title)">{{mapLabel.title}}</button>
+      <button  [hidden]="!mapLabel.visible" [style.top.px]=mapLabel.point.top [style.left.px]=mapLabel.point.left style="position: fixed;" ion-button [ngClass]="{ 'grey': !mapLabel.selected, 'white': mapLabel.swapTourAllowed, 'red': mapLabel.redColor}" (click)="playVideo(mapLabel.vimeo,mapLabel.time,mapLabel.endtime,mapLabel.title)">{{mapLabel.title}}</button>
     </div>
       
     <div>

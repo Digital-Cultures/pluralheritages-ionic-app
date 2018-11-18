@@ -33,8 +33,10 @@ page-walking {
     }
 
     .grey{
-        border: 1px solid #999;
+        border: 1px solid #999 !important;
         color: #999;
+        z-index: 2;
+        opacity: 0.5;
     }
 
     .red{

@@ -64,7 +64,7 @@ export class MyApp {
       }
 
       this.pages = [
-        { title: 'ABOUT THE PROJECT', component: IntroPage },
+        { title: '⇦ ABOUT THE PROJECT', component: IntroPage },
         { title: 'WALKING BACK IN TIME', component: WalkingPage, subPages: this.walkTimeSubPages },
         { title: 'WALKING WITH...', component: WalkingPage, subPages: this.walkSubPages },
         { title: 'Compass', component: CompassPage },

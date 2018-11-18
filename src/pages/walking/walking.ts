@@ -483,8 +483,12 @@ export class WalkingPage {
   }
 
   removeLabels() {
-    this.mapLabels = [];
+   //this.mapLabels = [];
+   for (let k=0; k<this.mapLabels.length; k++){
+    this.mapLabels[k].visible = false;
+   }
   }
+
   updateLabelPosition() {
     //select right route
     let routeRaw:number = this.restRouteProvider.getRouteNumber();
@@ -498,6 +502,7 @@ export class WalkingPage {
       allRoutesRaw = this.restRouteProvider.getAllRoutes();
     }
 
+    let markerCount:number=0;
     for (let k=0; k<allRoutesRaw.length; k++){
       
       if (allRoutesRaw[k].points) {
@@ -505,28 +510,42 @@ export class WalkingPage {
         for (let i = 0; i < allRoutesRaw[k].points.length; i++) {
           let selected  = (k == routeRaw ? true : false);
           this.map.fromLatLngToPoint({ lat: allRoutesRaw[k].points[i].lat, lng: allRoutesRaw[k].points[i].long }).then((point: any[]) => {
-            if (point[0]>0 && point[1]>0 && point[0]<1000 && point[1]<1000){
-              this.mapLabels.push({
-                pointID: k+"_"+i,
-                tourID: k,
-                name: allRoutesRaw[k].name,
-                title: allRoutesRaw[k].points[i].title,
-                point: { left: Math.floor(point[0].toFixed(1)), top: Math.floor(point[1].toFixed(1))-35 },
-                location: { lat: allRoutesRaw[k].points[i].lat, lng: allRoutesRaw[k].points[i].long },
-                vimeo: allRoutesRaw[k].points[i].vimeoID,
-                time: allRoutesRaw[k].points[i].time,
-                endtime: allRoutesRaw[k].points[i].endtime,
-                selected: selected,
-                swapTourAllowed: false,
-                redColor: redColor
-                //action: function() {  this.playVideo(routeRaw,i); console.log("CLICK")}
-              });
-            }
+            
+              // try to get point to update
+
+
+              // else add new
+              if (this.mapLabels.length==markerCount){
+                this.mapLabels.push({
+                  pointID: k+"_"+i,
+                  tourID: k,
+                  name: allRoutesRaw[k].name,
+                  title: allRoutesRaw[k].points[i].title,
+                  point: { left: Math.floor(point[0].toFixed(1)), top: Math.floor(point[1].toFixed(1))-35 },
+                  location: { lat: allRoutesRaw[k].points[i].lat, lng: allRoutesRaw[k].points[i].long },
+                  vimeo: allRoutesRaw[k].points[i].vimeoID,
+                  time: allRoutesRaw[k].points[i].time,
+                  endtime: allRoutesRaw[k].points[i].endtime,
+                  selected: selected,
+                  swapTourAllowed: false,
+                  redColor: redColor,
+                  visible: true
+                  //action: function() {  this.playVideo(routeRaw,i); console.log("CLICK")}
+                });
+              }else{
+                this.mapLabels[markerCount].point = { left: Math.floor(point[0].toFixed(1)), top: Math.floor(point[1].toFixed(1))-35 };
+                this.mapLabels[markerCount].selected = selected;
+                if (point[0]>0 && point[1]>0 && point[0]<1000 && point[1]<1000){
+                  this.mapLabels[markerCount].visible = true;
+                }else{
+                  this.mapLabels[markerCount].visible = false;
+                }
+              }
+              markerCount++;
           })
         }
       }
     }
-
   }
 
   updateLocationMarker() {
