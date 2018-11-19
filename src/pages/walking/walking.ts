@@ -71,6 +71,7 @@ export class WalkingPage {
   }
 
   mapLabels: any[] = [];
+  timelineLabels: any[] = [];
   swapTour = false;
   footerSwapTourText = "";
 
@@ -411,6 +412,7 @@ export class WalkingPage {
             path.push({ "lat": allRoutesRaw[k].path[i][1], "lng": allRoutesRaw[k].path[i][0] })
           }
 
+          //different coloured lines
           if (page==1){
             this.map.addPolyline({
               points: path,
@@ -494,9 +496,14 @@ export class WalkingPage {
     let routeRaw:number = this.restRouteProvider.getRouteNumber();
     let page:number = this.restRouteProvider.getRoutePageNumber();
     let allRoutesRaw;
-    let redColor = false;
+    let timeline = false;
+
+    let earliestDate = 3000; //temp
+    let latestDate = -3000; //temp
+
+
     if (page==1){
-      redColor = true;
+      timeline = true;
       allRoutesRaw = this.restRouteProvider.getAllTimeRoutes();
     }else{
       allRoutesRaw = this.restRouteProvider.getAllRoutes();
@@ -511,10 +518,7 @@ export class WalkingPage {
           let selected  = (k == routeRaw ? true : false);
           this.map.fromLatLngToPoint({ lat: allRoutesRaw[k].points[i].lat, lng: allRoutesRaw[k].points[i].long }).then((point: any[]) => {
             
-              // try to get point to update
-
-
-              // else add new
+              //add new map marker
               if (this.mapLabels.length==markerCount){
                 this.mapLabels.push({
                   pointID: k+"_"+i,
@@ -528,13 +532,30 @@ export class WalkingPage {
                   endtime: allRoutesRaw[k].points[i].endtime,
                   selected: selected,
                   swapTourAllowed: false,
-                  redColor: redColor,
+                  redColor: timeline,
                   visible: true
                   //action: function() {  this.playVideo(routeRaw,i); console.log("CLICK")}
                 });
-              }else{
+                if (timeline && selected){
+                  //timelineLabels
+                  let date = parseInt(allRoutesRaw[k].points[i].title, 10);
+                  if (date<earliestDate){
+                    earliestDate = date;
+                  }
+                  if (date>latestDate){
+                    latestDate = date;
+                  }
+                  this.drawLimeLine(earliestDate, latestDate);
+                }
+              } else { //update map marker position
+                this.mapLabels[markerCount].title = allRoutesRaw[k].points[i].title,
                 this.mapLabels[markerCount].point = { left: Math.floor(point[0].toFixed(1)), top: Math.floor(point[1].toFixed(1))-35 };
                 this.mapLabels[markerCount].selected = selected;
+                this.mapLabels[markerCount].location = { lat: allRoutesRaw[k].points[i].lat, lng: allRoutesRaw[k].points[i].long };
+                this.mapLabels[markerCount].vimeo = allRoutesRaw[k].points[i].vimeoID
+                this.mapLabels[markerCount].time = allRoutesRaw[k].points[i].time;
+                this.mapLabels[markerCount].endtime = allRoutesRaw[k].points[i].endtime;
+
                 if (point[0]>0 && point[1]>0 && point[0]<1000 && point[1]<1000){
                   this.mapLabels[markerCount].visible = true;
                 }else{
@@ -548,6 +569,19 @@ export class WalkingPage {
     }
   }
 
+  drawLimeLine(earliestDate, latestDate){
+    this.timelineLabels = [];
+    let timePeriod = latestDate-earliestDate;
+    let screenHeight = 500;
+    let markerHeight = 64;
+
+    let numberofMarkers = Math.floor(screenHeight/markerHeight);
+    let yearsPerMarker = Math.round(timePeriod / numberofMarkers);
+
+    for (let i = 0; i <= (numberofMarkers); i++) {
+      this.timelineLabels.push(earliestDate+(i*yearsPerMarker));
+    }
+  }
   updateLocationMarker() {
     if (this.locationFix) {
       this.map.fromLatLngToPoint({ lat: this.location.lat, lng: this.location.lng }).then((point: any[]) => {
@@ -566,28 +600,28 @@ export class WalkingPage {
     this.iframe_html = this.embedService.embed(this.vimeoUrl + vimeoID, { hash: 't=' + time, query: { autoplay: 1 } });
     this.playingMarkerID = pointID;
 
+
+    //convert to ms eg: 1m09s
+    let timeArray = time.split('s')[0].split('m');
+    let startTime: number = 0;
+    if (timeArray.length>1){
+      startTime = Number(timeArray[0])*60000 + Number(timeArray[1])*1000;
+    }else{
+      startTime = Number(timeArray[0])*1000;
+    }
+    console.log(startTime);
+
+    let timeEndArray = endtime.split('s')[0].split('m');
+    let endTime: number = 0;
+    if (timeEndArray.length>1){
+      endTime = Number(timeEndArray[0])*60000 + Number(timeEndArray[1])*1000;
+    }else{
+      endTime = Number(timeEndArray[0])*1000;
+    }
+
     this.restRouteProvider.getJSONsubs(this.tourGuide).subscribe(data => {
       console.log(time+"  -   "+endtime);
-      //1m09s
-
-      //convert to ms
-      let timeArray = time.split('s')[0].split('m');
-      let startTime: number = 0;
-      if (timeArray.length>1){
-         startTime = Number(timeArray[0])*60000 + Number(timeArray[1])*1000;
-      }else{
-         startTime = Number(timeArray[0])*1000;
-      }
-      console.log(startTime);
-
-      let timeEndArray = endtime.split('s')[0].split('m');
-      let endTime: number = 0;
-      if (timeEndArray.length>1){
-        endTime = Number(timeEndArray[0])*60000 + Number(timeEndArray[1])*1000;
-      }else{
-        endTime = Number(timeEndArray[0])*1000;
-      }
-
+      //
       this.subData = data;
 
       for (let i=0; this.subData.start.length; i++){
@@ -609,20 +643,27 @@ export class WalkingPage {
         this.nextSubtitle();
       }, this.subData.end[this.subtitlePosition]-this.subData.start[this.subtitlePosition]);
       */
+    },
+    error => console.log(error));
 
-      //get subtitles from vimeo
-      this.vimeoSubtitle();
+    //get subtitles from vimeo
+    this.vimeoSubtitle();
 
-      console.log(this.subData.end[this.subtitlePosition]-this.subData.start[this.subtitlePosition]);
+    console.log(this.subData.end[this.subtitlePosition]-this.subData.start[this.subtitlePosition]);
 
-      //close modal
-      setTimeout(()  =>{
-        this.closeVideo();
-      }, endTime-startTime)
-    });
+    //close modal
+    setTimeout(()  =>{
+      this.closeVideo();
+    }, endTime-startTime)
   }
 
   vimeoSubtitle(){
+    setTimeout(()  =>{
+      if (this.showVideoPlay){
+        this.vimeoSubtitle();
+      }
+    }, 50);
+
     let ifrm: any = document.getElementsByTagName('iframe');
     // reference to document in iframe
     let doc = ifrm[0].contentDocument? ifrm[0].contentDocument: ifrm[0].contentWindow.document;
@@ -635,10 +676,6 @@ export class WalkingPage {
       this.vimeoSubText = fld[0].textContent;
       this.subtitleText = this.vimeoSubText
     }
-
-    setTimeout(()  =>{
-      this.vimeoSubtitle();
-    }, 50);
   }
 
   //subtitles from json (redundent)

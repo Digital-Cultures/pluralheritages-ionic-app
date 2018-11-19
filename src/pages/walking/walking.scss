@@ -141,5 +141,27 @@ page-walking {
             width: 20px;
         }
     }
-   
+
+    .timeline{
+        position: fixed;
+        .shortline{
+            margin-top: 32px;
+            position: relative;
+            height: 2px;
+            width: 12px;
+            background-color: rgb(255, 81, 50);
+        }
+        .date{
+            position: relative;
+            top: -10px;
+            left: 16px;
+        }
+        .longline{
+            margin-top: 10px;
+            position: relative;
+            height: 2px;
+            width: 30px;
+            background-color: rgb(255, 81, 50);
+        }
+    }
 }

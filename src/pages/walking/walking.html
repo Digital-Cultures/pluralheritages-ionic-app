@@ -25,6 +25,15 @@
         <lottie-animation-view [options]="markerAnimationOption"></lottie-animation-view>
       </div>
     </div>
+
+    <div class="timeline">
+      <!-- time line -->
+      <div *ngFor="let timelineLabel of timelineLabels">
+          <div class="shortline"></div>
+          <div class="date">{{timelineLabel}}</div>
+          <div class="longline"></div>
+      </div>
+    </div>
   </div>
   <!-- <button *ngIf="showVideoPlay" ion-button (click)="onButtonClick($event)">Play video</button> -->
 
