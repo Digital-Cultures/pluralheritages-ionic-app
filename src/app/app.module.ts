@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http'; 
+import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -11,24 +11,26 @@ import { GoogleMaps } from "@ionic-native/google-maps";
 import { Vibration } from "@ionic-native/vibration";
 import { EmbedVideo } from 'ngx-embed-video';
 import { HttpModule } from '@angular/http';
+import { NativeAudio } from '@ionic-native/native-audio';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+
 
 import { MyApp } from './app.component';
-import { DemoAppPage } from '../pages/demoApp/demoApp';
 import { IntroPage } from '../pages/intro/intro';
 import { WalkingPage } from '../pages/walking/walking';
-import { CompassPage } from '../pages/compass/compass';
-import { VideoPage } from '../pages/video/video';
 import { RestRouteProvider } from '../providers/rest-route/rest-route';
 import { LottieAnimationViewModule } from 'ng-lottie';
+
+export function createTranslateLoader(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
 
 @NgModule({
   declarations: [
     MyApp,
-    DemoAppPage,
     IntroPage,
-    WalkingPage,
-    CompassPage,
-    VideoPage
+    WalkingPage
   ],
   imports: [
     BrowserModule,
@@ -36,16 +38,20 @@ import { LottieAnimationViewModule } from 'ng-lottie';
     HttpClientModule,
     IonicModule.forRoot(MyApp),
     EmbedVideo.forRoot(),
-    LottieAnimationViewModule.forRoot()
+    LottieAnimationViewModule.forRoot(),
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: createTranslateLoader,
+        deps: [HttpClient]
+      }
+    })
   ],
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    DemoAppPage,
     IntroPage,
-    WalkingPage,
-    CompassPage,
-    VideoPage
+    WalkingPage
   ],
   providers: [
     StatusBar,
@@ -56,7 +62,8 @@ import { LottieAnimationViewModule } from 'ng-lottie';
     GoogleMaps,
     Vibration,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    RestRouteProvider
+    RestRouteProvider,
+    NativeAudio
   ]
 })
 export class AppModule {}

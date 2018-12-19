@@ -11,11 +11,8 @@
     </ion-header>
   
     <ion-content>
-    <ion-title>PLURAL HERITAGES</ion-title>
+    <ion-title>{{ 'TITLE' | translate }}</ion-title>
       <ion-list>
-
-
-
           <ion-row >
             <!-- Parent Pages  -->
             <ion-col col-12 class="menu-name" (click)="openPage(pages[0], 0, false)">
@@ -48,27 +45,16 @@
           </ion-row>
       </ion-list>
 
-      <!-- <ion-title>Route</ion-title>
-      <ion-list radio-group>
-        <ion-item>
-          <ion-label>Tomo Bey</ion-label>
-          <ion-radio value="0" checked (ionSelect)="radioChecked(0)"></ion-radio>
-        </ion-item>
-        <ion-item>
-          <ion-label>Cem</ion-label>
-          <ion-radio value="1" (ionSelect)="radioChecked(1)"></ion-radio>
-        </ion-item>
-        <ion-item>
-          <ion-label>Yorgo</ion-label>
-          <ion-radio value="2" (ionSelect)="radioChecked(2)"></ion-radio>
-        </ion-item>
-        <ion-item>
-          <ion-label>Yucel-Hatice</ion-label>
-          <ion-radio value="3" (ionSelect)="radioChecked(3)"></ion-radio>
-        </ion-item>
-      </ion-list> -->
+      <ion-segment color="primary" (ionChange)="segmentChanged($event)">
+        <ion-segment-button value="en">
+          English
+        </ion-segment-button>
+        <ion-segment-button value="tr">
+          Turkish
+        </ion-segment-button>
+      </ion-segment>
+
     </ion-content>
-  
   </ion-menu>
   
   <!-- Disable swipe-to-go-back because it's poor UX to combine STGB with side menus -->

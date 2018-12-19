@@ -1,5 +1,5 @@
 import { Component, Renderer2 } from '@angular/core';
-import { Nav, ToastController } from 'ionic-angular';
+import { ToastController } from 'ionic-angular';
 import { Geolocation } from '@ionic-native/geolocation';
 import { DeviceOrientation, DeviceOrientationCompassHeading } from '@ionic-native/device-orientation';
 import { ScreenOrientation } from '@ionic-native/screen-orientation';
@@ -7,17 +7,13 @@ import {
   GoogleMaps,
   GoogleMap,
   GoogleMapsEvent,
-  Marker,
-  GoogleMapsAnimation,
-  MyLocation,
-  CameraPosition,
   ILatLng,
-  LatLng,
   LatLngBounds,
-  PolygonOptions,
-  MarkerOptions
+  CameraPosition
 } from '@ionic-native/google-maps';
-import { greatCircle, point, polygon, destination, booleanPointInPolygon, distance, circle } from '@turf/turf';
+import { NativeAudio } from '@ionic-native/native-audio';
+import { point, polygon, destination, distance } from '@turf/turf';
+import { TranslateService } from '@ngx-translate/core';
 
 import { EmbedVideoService } from 'ngx-embed-video';
 import { RestRouteProvider } from '../../providers/rest-route/rest-route';
@@ -37,6 +33,10 @@ export class WalkingPage {
   event: any;
   magneticHeading: number = 0;
   location: any;
+  target: any;
+  tilt: number = 0;
+  zoom: number = 17;
+  markersAdded: any[] = [];
   locationFix: boolean = false;
   polygonOptions: any;
   polygonView: any;
@@ -51,6 +51,7 @@ export class WalkingPage {
   subData: any;
   subEnd: number;
   vimeoSubText: string = "";
+  languge: string = "en";
 
   //video
   showVideoPlay = false;
@@ -60,6 +61,9 @@ export class WalkingPage {
   videoPlay: boolean = false;
   playingMarkerID: string;
   swapTourID: number;
+
+  //audio
+  playing:boolean = false;
 
   mapLocationMarker: {top:number,left:number} = {top:0,left:0};
   markerAnimationOption = {
@@ -82,25 +86,38 @@ export class WalkingPage {
     private deviceOrientation: DeviceOrientation,
     private screenOrientation: ScreenOrientation,
     private embedService: EmbedVideoService,
-    public restRouteProvider: RestRouteProvider
+    public restRouteProvider: RestRouteProvider,
+    private nativeAudio: NativeAudio,
+    public translate: TranslateService
   ) {
     this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
     this.locationFix = false;
     this.polygonLoaded = false;
+    this.nativeAudio.preloadComplex('uniqueId2', 'assets/sounds/ambient.mp3', 1, 1, 0).then((evt) => {console.log("sound loaded")}, (error: any) => console.log(error + " - load error message"));
+    this.nativeAudio.preloadComplex('uniqueId3', 'assets/sounds/bgGame.mp3', 1, 1, 0).then((evt) => {console.log("sound loaded")}, (error: any) => console.log(error + " - load error message"));
+
+    translate.onLangChange.subscribe((value) => {
+        // value is our translated string
+        this.languge = value.lang;
+        console.log(value.lang)
+      });
   }
 
   ionViewDidLoad() {
     this.loadMap();
 
-    this.listenerFn = this.renderer.listen('window', 'deviceorientation', (evt) => {
-      this.event = evt;
-      this.deviceOrientation.getCurrentHeading().then(
-        (data1: DeviceOrientationCompassHeading) => {
-          this.magneticHeading = data1.magneticHeading;
-        },
-        (error: any) => console.log(error + " - error message")
-      );
-    });
+    // this.listenerFn = this.renderer.listen('window', 'deviceorientation', (evt) => {
+    //   this.event = evt;
+    //   this.deviceOrientation.getCurrentHeading().then(
+    //     (data1: DeviceOrientationCompassHeading) => {
+    //       this.magneticHeading = data1.magneticHeading;
+    //       this.map.setCameraBearing(this.magneticHeading);
+    //     },
+    //     (error: any) => console.log(error + " - error message")
+    //   );
+    // });
+
+
   }
 
   loadMap() {
@@ -111,9 +128,9 @@ export class WalkingPage {
         target: {
           lat: 54,
           lng: -1
-        },
-        zoom: 16,
-        tilt: 30
+        }//,
+        //zoom: 16,
+        //tilt: 30
       },
       gestures: {
         //  scroll: false
@@ -350,21 +367,6 @@ export class WalkingPage {
       ]
     });
 
-    // this.map.on(GoogleMapsEvent.MAP_DRAG_START).subscribe(() => {
-    //   this.updateLabelPosition();
-    // });
-    // this.map.on(GoogleMapsEvent.MAP_DRAG).subscribe(() => {
-    //   this.updateLabelPosition();
-    // });
-    // this.map.on(GoogleMapsEvent.MAP_DRAG_END).subscribe(() => {
-    //   this.updateLabelPosition();
-    // });
-
-    // this.map.on(GoogleMapsEvent.MAP_CLICK).subscribe(() => {
-    //   this.updateLabelPosition();
-    // });
-
-
     // Wait the maps plugin is ready until the MAP_READY event
     this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
       this.mapReady = true;
@@ -375,19 +377,30 @@ export class WalkingPage {
       let page:number = this.restRouteProvider.getRoutePageNumber();
 
       let allRoutesRaw;
+      let sounds;
       if (page==1){
         // walking back in time
         allRoutesRaw = this.restRouteProvider.getAllTimeRoutes();
-      }else{
+        this.tourGuide = allRoutesRaw[routeRaw].name;
+      } else if (page==2){
         // tour
         allRoutesRaw = this.restRouteProvider.getAllRoutes();
+        this.tourGuide = allRoutesRaw[routeRaw].name;
+      } else if (page==3){
+        allRoutesRaw = [];
+        sounds = this.restRouteProvider.getAllSounds();
+        this.target = {lat: 40.996635, lng: 28.928335};
+        this.zoom = 19;
+        this.tilt = 90;
+        
+        var subscription = this.deviceOrientation.watchHeading().subscribe(
+          (data: DeviceOrientationCompassHeading) => this.map.setCameraBearing(data.trueHeading)
+        );
       }
-      
-
-      this.tourGuide = allRoutesRaw[routeRaw].name;
+        
 
       for (let k = 0; k < allRoutesRaw.length; k++) {
-        // non selected route
+        // non-selected route
         if (k!=routeRaw){
           let path = [];
           for (let i = 0; i < allRoutesRaw[k].path.length; i++) {
@@ -420,46 +433,57 @@ export class WalkingPage {
               width: 4,
               color: 'rgb(255, 81, 50)'
             });
-          }else{
+          } else if (page==2){
             this.map.addPolyline({
               points: path,
               //'width': 5,
               width: 4,
               color: '#FFA042'
             });
-          }
+          } 
 
-          // zoom too
-          let latLngBounds = new LatLngBounds(path);
-          this.map.moveCamera({
-            'target': latLngBounds
-          });
-
+          // set zoom too for selected path
+          this.target = new LatLngBounds(path);
         }
       }
+
+      // for (let k = 0; k < sounds.length; k++) {
+
+      // }
+      
+      this.map.moveCamera({
+        'target': this.target,
+        'tilt': this.tilt,
+        'zoom': this.zoom
+      });
      
       this.updateLabelPosition();
 
-      // setInterval(() => {
-      //   if (Math.round(this.magneticHeading) != this.map.getCameraBearing()) {
-      //     this.onHeadingChange(this.magneticHeading);
-      //   }
-      // }, 50);
-
-
+      // if (page==3){
+      //   setInterval(() => {
+      //     if (Math.round(this.magneticHeading) != this.map.getCameraBearing()) {
+      //       //this.map.setCameraBearing(this.magneticHeading);
+      //       //this.rotateMap(this.magneticHeading);
+      //       //this.onHeadingChange(this.magneticHeading);
+      //     }
+      //   }, 50);
+      // }
+      
       // let myLocation = point([this.location.lng, this.location.lat]);
       // let targetLocation = point([allRoutesRaw[routeRaw].path[0][0], allRoutesRaw[routeRaw].path[0][1]]);
       // // if the distance is less than 40K zoom to your location
       // if (distance(myLocation, targetLocation)<40){
+      //else if(page!=3){
         setTimeout(()  =>{
           this.map.animateCamera({
             target: {lat: this.location.lat, lng: this.location.lng},
-            zoom: 17,
-            //tilt: 60,
+            //zoom: 17,
+            //tilt: this.tilt,
             //bearing: 140,
             duration: 5000
           });
-        }, 5000)
+        }, 5000);
+        
       // }
 
 
@@ -505,65 +529,117 @@ export class WalkingPage {
     if (page==1){
       timeline = true;
       allRoutesRaw = this.restRouteProvider.getAllTimeRoutes();
-    }else{
+    } else if (page==2){
       allRoutesRaw = this.restRouteProvider.getAllRoutes();
+    } else if (page==3){
+      allRoutesRaw = this.restRouteProvider.getAllSounds();;
     }
 
+    if (page!=3){
     let markerCount:number=0;
-    for (let k=0; k<allRoutesRaw.length; k++){
-      
-      if (allRoutesRaw[k].points) {
+      for (let k=0; k<allRoutesRaw.length; k++){
         
-        for (let i = 0; i < allRoutesRaw[k].points.length; i++) {
-          let selected  = (k == routeRaw ? true : false);
-          this.map.fromLatLngToPoint({ lat: allRoutesRaw[k].points[i].lat, lng: allRoutesRaw[k].points[i].long }).then((point: any[]) => {
-            
-              //add new map marker
-              if (this.mapLabels.length==markerCount){
-                this.mapLabels.push({
-                  pointID: k+"_"+i,
-                  tourID: k,
-                  name: allRoutesRaw[k].name,
-                  title: allRoutesRaw[k].points[i].title,
-                  point: { left: Math.floor(point[0].toFixed(1)), top: Math.floor(point[1].toFixed(1))-35 },
-                  location: { lat: allRoutesRaw[k].points[i].lat, lng: allRoutesRaw[k].points[i].long },
-                  vimeo: allRoutesRaw[k].points[i].vimeoID,
-                  time: allRoutesRaw[k].points[i].time,
-                  endtime: allRoutesRaw[k].points[i].endtime,
-                  selected: selected,
-                  swapTourAllowed: false,
-                  redColor: timeline,
-                  visible: true
-                  //action: function() {  this.playVideo(routeRaw,i); console.log("CLICK")}
-                });
-                if (timeline && selected){
-                  //timelineLabels
-                  let date = parseInt(allRoutesRaw[k].points[i].title, 10);
-                  if (date<earliestDate){
-                    earliestDate = date;
+        if (allRoutesRaw[k].points) {
+          
+          for (let i = 0; i < allRoutesRaw[k].points.length; i++) {
+            let selected  = (k == routeRaw ? true : false);
+            this.map.fromLatLngToPoint({ lat: allRoutesRaw[k].points[i].lat, lng: allRoutesRaw[k].points[i].long }).then((point: any[]) => {
+              
+                //add new map marker
+                if (this.mapLabels.length==markerCount){
+                  this.mapLabels.push({
+                    pointID: k+"_"+i,
+                    tourID: k,
+                    name: allRoutesRaw[k].name,
+                    title: allRoutesRaw[k].points[i].title,
+                    point: { left: Math.floor(point[0].toFixed(1)), top: Math.floor(point[1].toFixed(1))-35 },
+                    location: { lat: allRoutesRaw[k].points[i].lat, lng: allRoutesRaw[k].points[i].long },
+                    vimeo: allRoutesRaw[k].points[i].vimeoID,
+                    time: allRoutesRaw[k].points[i].time,
+                    endtime: allRoutesRaw[k].points[i].endtime,
+                    selected: selected,
+                    swapTourAllowed: false,
+                    redColor: timeline,
+                    visible: true
+                    //action: function() {  this.playVideo(routeRaw,i); console.log("CLICK")}
+                  });
+                  if (timeline && selected){
+                    //timelineLabels
+                    let date = parseInt(allRoutesRaw[k].points[i].title, 10);
+                    if (date<earliestDate){
+                      earliestDate = date;
+                    }
+                    if (date>latestDate){
+                      latestDate = date;
+                    }
+                    this.drawLimeLine(earliestDate, latestDate);
                   }
-                  if (date>latestDate){
-                    latestDate = date;
-                  }
-                  this.drawLimeLine(earliestDate, latestDate);
-                }
-              } else { //update map marker position
-                this.mapLabels[markerCount].title = allRoutesRaw[k].points[i].title,
-                this.mapLabels[markerCount].point = { left: Math.floor(point[0].toFixed(1)), top: Math.floor(point[1].toFixed(1))-35 };
-                this.mapLabels[markerCount].selected = selected;
-                this.mapLabels[markerCount].location = { lat: allRoutesRaw[k].points[i].lat, lng: allRoutesRaw[k].points[i].long };
-                this.mapLabels[markerCount].vimeo = allRoutesRaw[k].points[i].vimeoID
-                this.mapLabels[markerCount].time = allRoutesRaw[k].points[i].time;
-                this.mapLabels[markerCount].endtime = allRoutesRaw[k].points[i].endtime;
+                } else { //update map marker position
+                  this.mapLabels[markerCount].title = allRoutesRaw[k].points[i].title,
+                  this.mapLabels[markerCount].tr_title = allRoutesRaw[k].points[i].tr_title,
+                  this.mapLabels[markerCount].point = { left: Math.floor(point[0].toFixed(1)), top: Math.floor(point[1].toFixed(1))-35 };
+                  this.mapLabels[markerCount].selected = selected;
+                  this.mapLabels[markerCount].location = { lat: allRoutesRaw[k].points[i].lat, lng: allRoutesRaw[k].points[i].long };
+                  this.mapLabels[markerCount].vimeo = allRoutesRaw[k].points[i].vimeoID
+                  this.mapLabels[markerCount].time = allRoutesRaw[k].points[i].time;
+                  this.mapLabels[markerCount].endtime = allRoutesRaw[k].points[i].endtime;
 
-                if (point[0]>0 && point[1]>0 && point[0]<1000 && point[1]<1000){
-                  this.mapLabels[markerCount].visible = true;
-                }else{
-                  this.mapLabels[markerCount].visible = false;
+                  if (point[0]>0 && point[1]>0 && point[0]<1000 && point[1]<1000){
+                    this.mapLabels[markerCount].visible = true;
+                  }else{
+                    this.mapLabels[markerCount].visible = false;
+                  }
+                }
+                markerCount++;
+            })
+          }
+        }
+      }
+    }
+
+    if (page==3){
+      if (this.markersAdded.length < 1){    
+        for (let k=0; k<allRoutesRaw.length; k++){        
+          if (allRoutesRaw[k].points) {            
+            for (let i = 0; i < allRoutesRaw[k].points.length; i++) {
+              let marker =  this.map.addMarker({position:{lat: allRoutesRaw[k].points[i].lat, lng: allRoutesRaw[k].points[i].long}, title: allRoutesRaw[k].points[i].title})
+
+              this.markersAdded.push(marker);
+            }
+          }
+        } 
+      }
+      // calculate distance to marker
+      if (this.location != null){
+        for (let k=0; k<allRoutesRaw.length; k++){        
+          if (allRoutesRaw[k].points) {            
+            for (let i = 0; i < allRoutesRaw[k].points.length; i++) {
+  
+              let myLocation = point([this.location.lng, this.location.lat]);
+              let targetLocation = point([allRoutesRaw[k].points[i].long, allRoutesRaw[k].points[i].lat]);
+  
+              //distance in meters
+              let distanceToPoint = Math.round(distance(myLocation, targetLocation) * 1000);
+              
+              if (distanceToPoint < 50){
+                if(!this.playing){
+                  //play sound
+                  this.nativeAudio.play('uniqueId2',() => { this.playing = false; console.log("sound played")} )
+                    .then(() => {console.log("sound started")}, 
+                    (error: any) => console.log(error + " - error message"));
+
+                    setTimeout(()  =>{
+                      this.nativeAudio.play('uniqueId3',() => { this.playing = false; console.log("sound played 3")} )
+                      .then(() => {console.log("sound started 3")}, 
+                      (error: any) => console.log(error + " - error message 3"));
+                    }, 1000);
+                 
+                    
+                  this.playing = true;
                 }
               }
-              markerCount++;
-          })
+            }
+          }
         }
       }
     }
@@ -585,7 +661,7 @@ export class WalkingPage {
   updateLocationMarker() {
     if (this.locationFix) {
       this.map.fromLatLngToPoint({ lat: this.location.lat, lng: this.location.lng }).then((point: any[]) => {
-        this.mapLocationMarker = {left: Math.floor(point[0].toFixed(1)-35), top: Math.floor(point[1].toFixed(1))-35};
+        this.mapLocationMarker = {left: Math.floor(point[0].toFixed(1)-50), top: Math.floor(point[1].toFixed(1))-50};
       })
     }
   }
@@ -694,7 +770,6 @@ export class WalkingPage {
     this.showVideoPlay = false;
   }
 
-
   onHeadingChange(mag: number) {
 
     if (this.locationFix) {
@@ -749,61 +824,10 @@ export class WalkingPage {
  //       this.polygonLoaded = true;
       }
 
-
-      /*
-            this.circleOptions = {
-              'points': newCirclePoints,
-              'strokeColor': '#FFFFFF',
-              'fillColor': '#FFFFFF',
-              'fillOpacity': 0.1,
-              'strokeWidth': 2
-            };
-      
-      
-             //if it exhists update point 
-             if (this.circleVariable) {
-              this.circleVariable.setPoints(newCirclePoints);
-            } else {
-              this.map.addPolygon(this.circleOptions).then((marker) => {
-                this.circleVariable = marker;
-                this.mapAnimating = false;
-              });
-            }
-      */
-      // Triger if overlap
-     // let targetPoints = [point([41.014665, 28.983539]), point([40.993798, 28.921575]), point([41.026142, 28.938784]), point([40.996635, 28.928335]), point([41.035145, 28.941362])];
-
-      let scanArea = polygon([[
-        [startPoint.geometry.coordinates[0], startPoint.geometry.coordinates[1]],
-        [endPoint.geometry.coordinates[0], endPoint.geometry.coordinates[1]],
-        [endPoint2.geometry.coordinates[0], endPoint2.geometry.coordinates[1]],
-        [startPoint.geometry.coordinates[0], startPoint.geometry.coordinates[1]]
-      ]]);
-
       this.showVideoPlay = false;
-
-      // need a list of visable markers
-      // targetPoints.forEach((targetPoint, i) => {
-      //   if (booleanPointInPolygon(targetPoint, scanArea)) {
-      //     //if it is already added dont do anything
-
-      //     //else add the point
-      //   } else {
-      //     // if visable remove
-
-      //   }
-
-      // });
-
-
-
 
     }
   }
-
-  // onButtonClick() {
-  //   this.updateLocation();
-  // }
 
   updateLocation(position) {
     if (!this.mapReady) {
@@ -860,4 +884,6 @@ export class WalkingPage {
     });
     return coords;
   }
+
+  
 }

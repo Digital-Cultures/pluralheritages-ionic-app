@@ -38,3 +38,25 @@
 .menu-name .list{
     margin-left: 20px;
 }
+
+ion-tabs {
+    margin-bottom: 20px;
+  }
+
+  ion-tabs,
+  ion-tabs .tabbar {
+    position: relative;
+    top: auto;
+    height: auto;
+    visibility: visible;
+    opacity: 1;
+  }
+
+  ion-segment{
+    bottom: 0px;
+    position: absolute;
+  }
+
+  ion-segment-button{
+    border-bottom-width: 4px;
+  }

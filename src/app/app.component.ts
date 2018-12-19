@@ -1,14 +1,13 @@
 import { Component, ViewChild, Injectable } from '@angular/core';
 import { Nav, Platform, MenuController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
+import { ScreenOrientation } from '@ionic-native/screen-orientation';
 import { SplashScreen } from '@ionic-native/splash-screen';
-import { timer } from 'rxjs/observable/timer'
+import { timer } from 'rxjs/observable/timer';
+import { TranslateService } from '@ngx-translate/core';
 
 import { IntroPage } from '../pages/intro/intro';
 import { WalkingPage } from '../pages/walking/walking';
-import { DemoAppPage } from '../pages/demoApp/demoApp';
-import { CompassPage } from '../pages/compass/compass';
-import { VideoPage } from '../pages/video/video';
 import { RestRouteProvider } from '../providers/rest-route/rest-route';
 
 
@@ -28,6 +27,7 @@ export class MyApp {
   walkTimeSubPages: Array<{title: string, component: any }> = [];
   pageID: number = 0;
   routeID: number = 0;
+  language: string = 'en';
   
   selectedMenu: number;
   selectedWalk: number;
@@ -47,9 +47,17 @@ export class MyApp {
     public statusBar: StatusBar, 
     public splashScreen: SplashScreen,
     public restRouteProvider: RestRouteProvider,
-    public menuCtrl: MenuController) {
-    
+    public menuCtrl: MenuController,
+    public translate: TranslateService,
+    private screenOrientation: ScreenOrientation) {
+
       this.initializeApp();
+
+      this.translate.setDefaultLang(this.language);
+      this.translate.use(this.language);
+      // set to landscape
+      this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
+
 
       restRouteProvider.getAllRoutes();
       let allRoutesRaw = this.restRouteProvider.getAllRoutes();
@@ -64,11 +72,10 @@ export class MyApp {
       }
 
       this.pages = [
-        { title: '⇦ ABOUT THE PROJECT', component: IntroPage },
+        { title: 'HOME', component: IntroPage },
         { title: 'WALKING BACK IN TIME', component: WalkingPage, subPages: this.walkTimeSubPages },
         { title: 'WALKING WITH...', component: WalkingPage, subPages: this.walkSubPages },
-        { title: 'Compass', component: CompassPage },
-        { title: 'Video', component: VideoPage }
+        { title: 'VANTAGE POINT', component: WalkingPage, subPages: this.walkSubPages }
       ]
 
       this.restRouteProvider.route.subscribe(routeID => {
@@ -83,6 +90,12 @@ export class MyApp {
         if(this.pageID != pageID){
           this.pageID = pageID;
           this.openPage(this.walkSubPages[pageID], this.routeID, true)
+        }
+      })
+
+      this.restRouteProvider.language.subscribe(language => {
+        if(this.language != language){
+          this.language = language;
         }
       })
   }
@@ -129,8 +142,11 @@ export class MyApp {
 
   setRoute(page,route){
       this.restRouteProvider.setRoute(page,route);
+
   }
-  // radioChecked(value){
-  //   this.restRouteProvider.setRoute(value);
-  // }
+
+  segmentChanged(event){
+    this.restRouteProvider.setLanguage(event.value);
+    this.translate.use(event.value);
+  }
 }

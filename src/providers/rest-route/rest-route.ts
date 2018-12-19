@@ -17,6 +17,10 @@ export class RestRouteProvider {
 
   private routePage = new BehaviorSubject<number>(0);
   page = this.routePage.asObservable();
+
+  private pageLanguage = new BehaviorSubject<string>('english');
+  language = this.pageLanguage.asObservable();
+
   //route: number = 3;
   rawRoute : any[] = [
               //{
@@ -112,6 +116,7 @@ export class RestRouteProvider {
                       time: "2m27s",
                       endtime: "2m58s",
                       title: "mystical, tranquil",
+                      tr_title: "mistik, sakin",
                       lat: 41.031382, 
                       long: 28.938506
                   },
@@ -120,6 +125,7 @@ export class RestRouteProvider {
                       time: "6m44s",
                       endtime: "7m02s",
                       title: "falling",
+                      tr_title: "düşüş",
                       lat: 41.031541, 
                       long: 28.936720
                   },
@@ -129,6 +135,7 @@ export class RestRouteProvider {
                       time: "8m45s",
                       endtime: "9m05s",
                       title: "flags and lights",
+                      tr_title: "bayraklar ve ışıklar",
                       lat: 41.031579, 
                       long: 28.938697
                   }
@@ -142,6 +149,7 @@ export class RestRouteProvider {
                       time: "1s",
                       endtime: "27s",
                       title: "graffiti",
+                      tr_title: "duvar yazısı",
                       lat: 41.030611, 
                       long: 28.935331
                   },
@@ -150,6 +158,7 @@ export class RestRouteProvider {
                       time: "2m58s",
                       endtime: "3m38s",
                       title: "slums and tents",
+                      tr_title: "gecekondu ve çadırlar",
                       lat: 41.029769, 
                       long: 28.935295
                   },
@@ -159,6 +168,7 @@ export class RestRouteProvider {
                       time: "6m15s",
                       endtime: "6m37s",
                       title: "coffee and razor wire",
+                      tr_title: "kahve ve dikenli tel",
                       lat: 41.027285, 
                       long: 28.932471
                   }
@@ -169,6 +179,7 @@ export class RestRouteProvider {
                       time: "7m0s",
                       endtime: "7m43s",
                       title: "heritage and horsemeat",
+                      tr_title: "kültürel miras ve at eti",
                       lat: 41.026778, 
                       long: 28.931917
                   }
@@ -179,6 +190,7 @@ export class RestRouteProvider {
                       time: "11m22s",
                       endtime: "12m06s",
                       title: "Temporarily under preservation",
+                      tr_title: "geçici olarak koruma altında",
                       lat: 41.025048, 
                       long: 28.930243
                   }
@@ -192,6 +204,7 @@ export class RestRouteProvider {
                     time: "5s",
                     endtime: "35s",
                     title: "the village",
+                    tr_title: "köy",
                     lat: 40.994470,
                     long: 28.925036
                   },
@@ -200,6 +213,7 @@ export class RestRouteProvider {
                     time: "35s",
                     endtime: "1m9s",
                     title: "we are established",
+                    tr_title: "yerleştik",
                     lat: 40.995736,
                     long: 28.926694
                   },
@@ -208,6 +222,7 @@ export class RestRouteProvider {
                     time: "1m9s",
                     endtime: "1m19s",
                     title: "the same kind of people",
+                    tr_title: "aynı tür insanlar",
                     lat: 40.996500,
                     long: 28.927560
                   },
@@ -216,6 +231,7 @@ export class RestRouteProvider {
                     time: "2m57s",
                     endtime: "3m21s",
                     title: "wooden houses",
+                    tr_title: "ahşap evler",
                     lat: 40.994822,
                     long: 28.929035
                   },
@@ -224,6 +240,7 @@ export class RestRouteProvider {
                     time: "3m21s",
                     endtime: "4m5s",
                     title: "the trains",
+                    tr_title: "trenler",
                     lat: 40.993897,
                     long: 28.927073
                   },
@@ -232,6 +249,7 @@ export class RestRouteProvider {
                     time: "4m9s",
                     endtime: "4m33s",
                     title: "urban transformation",
+                    tr_title: "kentsel değişim",
                     lat: 40.996569,
                     long: 28.922057
                   },
@@ -240,6 +258,7 @@ export class RestRouteProvider {
                     time: "4m33s",
                     endtime: "5m19s",
                     title: "destruction",
+                    tr_title: "yıkım",
                     lat: 40.994032,
                     long: 28.922344
                   } 
@@ -273,6 +292,7 @@ export class RestRouteProvider {
                       time: "4m59s",
                       endtime: "5m33s",
                       title: "decorated carriages",
+                      tr_title: "süslenmiş at arabaları",
                       lat: 40.994992, 
                       long: 28.925666
                   },
@@ -281,6 +301,7 @@ export class RestRouteProvider {
                       time: "7m01s",
                       endtime: "7m37s",
                       title: "lost gardens",
+                      tr_title: "kayıp bahçeler",
                       lat: 40.994373, 
                       long: 28.923652
                   },
@@ -289,6 +310,7 @@ export class RestRouteProvider {
                       time: "8m13s",
                       endtime: "8m51s",
                       title: "movies and fights",
+                      tr_title: "filmler ve kavgalar",
                       lat: 40.993753, 
                       long: 28.923762
                   },
@@ -297,6 +319,7 @@ export class RestRouteProvider {
                       time: "11m29s",
                       endtime: "12m1s",
                       title: "outside looking in",
+                      tr_title: "dıştan içe bakış",
                       lat: 40.994404, 
                       long: 28.920663
                   },
@@ -305,6 +328,7 @@ export class RestRouteProvider {
                       time: "15m59s",
                       endtime: "16m29s",
                       title: "segregation",
+                      tr_title: "ayrım",
                       lat: 40.998443, 
                       long: 28.920170
                   }
@@ -332,6 +356,7 @@ export class RestRouteProvider {
                       time: "1m19s",
                       endtime: "1m39s",
                       title: "no saint",
+                      tr_title: "yatır yok",
                       lat: 41.026858, 
                       long: 28.935487
                   },
@@ -340,6 +365,7 @@ export class RestRouteProvider {
                       time: "7m47s",
                       endtime: "8m21s",
                       title: "horse smells",
+                      tr_title: "at kokuları",
                       lat: 41.027770, 
                       long: 28.933931
                   },
@@ -349,6 +375,7 @@ export class RestRouteProvider {
                       time: "13m51s",
                       endtime: "14m27s",
                       title: "little Venice",
+                      tr_title: "küçük Venedik",
                       lat: 41.027857, 
                       long: 28.932037
                   },
@@ -357,6 +384,7 @@ export class RestRouteProvider {
                       time: "15m05s",
                       endtime: "15m33s",
                       title: "surrounded by walls",
+                      tr_title: "duvarlarla çevrili",
                       lat: 41.028761, 
                       long: 28.934257
                   }  
@@ -396,6 +424,7 @@ export class RestRouteProvider {
                       time: "21s",
                       endtime: "43s",
                       title: "garden air",
+                      tr_title: "bahçe havası",
                       lat: 41.001198, 
                       long: 28.922850
                   },
@@ -404,6 +433,7 @@ export class RestRouteProvider {
                       time: "55s",
                       endtime: "1m33s",
                       title: "Roma neighbours",
+                      tr_title: "Roman komşular",
                       lat: 41.000805, 
                       long: 28.922880
                   },    
@@ -412,6 +442,7 @@ export class RestRouteProvider {
                       time: "5m9s",
                       endtime: "5m41s",
                       title: "the bathhouse",
+                      tr_title: "hamam",
                       lat: 40.997233, 
                       long: 28.924166
                   },    
@@ -420,6 +451,7 @@ export class RestRouteProvider {
                       time: "6m17s",
                       endtime: "6m51s",
                       title: "addiction",
+                      tr_title: "bağımlılık",
                       lat: 40.995789, 
                       long: 28.921668
                   },    
@@ -428,6 +460,7 @@ export class RestRouteProvider {
                       time: "7m56s",
                       endtime: "8m29s",
                       title: "shanty houses",
+                      tr_title: "gecekondu evleri",
                       lat: 40.998059, 
                       long: 28.921177
                   },    
@@ -436,6 +469,7 @@ export class RestRouteProvider {
                       time: "3s",
                       endtime: "59s",
                       title: "buying my greens",
+                      tr_title: "yeşilliklerimi satın almak",
                       lat: 40.998316, 
                       long: 28.921116
                   },    
@@ -444,6 +478,7 @@ export class RestRouteProvider {
                       time: "20m46s",
                       endtime: "21m18s",
                       title: "train hopping",
+                      tr_title: "trene atlamak",
                       lat: 40.994570, 
                       long: 28.928651
                   }
@@ -457,6 +492,7 @@ export class RestRouteProvider {
                       time: "3s",
                       endtime: "59s",
                       title: "our neighbourhood",
+                      tr_title: "bizim mahalle",
                       lat: 41.035127, 
                       long: 28.941281
                   },
@@ -465,6 +501,7 @@ export class RestRouteProvider {
                       time: "2m53s",
                       endtime: "3m27s",
                       title: "all new people",
+                      tr_title: "tüm yeni insanlar",
                       lat: 41.035430,
                       long: 28.941239
                   },
@@ -473,6 +510,7 @@ export class RestRouteProvider {
                       time: "3m27s",
                       endtime: "4m11s",
                       title: "I grew up in this garden",
+                      tr_title: "bu bahçede büyüdüm",
                       lat: 41.0346221,
                       long: 28.9412883
                   },
@@ -481,7 +519,8 @@ export class RestRouteProvider {
                       time: "6m39s",
                       endtime: "7m03s",
                       title: "waking up to roosters",
-                       lat: 41.0346221,
+                      tr_title: "horozlara uyanmak",
+                      lat: 41.0346221,
                       long: 28.9412883
                   },
                   {
@@ -489,6 +528,7 @@ export class RestRouteProvider {
                       time: "7m11s",
                       endtime: "7m43s",
                       title: "the walls: our playground",
+                      tr_title: "duvarlar: bizim oyun alanımız",
                       lat: 41.034497,
                       long: 28.941259 
                   },
@@ -497,6 +537,7 @@ export class RestRouteProvider {
                       time: "8m13s",
                       endtime: "8m27s",
                       title: "digging",
+                      tr_title: "kazmak",
                       lat: 41.033619,
                       long: 28.940750
                   }
@@ -515,6 +556,7 @@ export class RestRouteProvider {
         time: "1m03s",
         endtime: "1m10s",
         title: "1826",//Railroad
+        tr_title: "1826",
         lat: 40.994293,
         long:  28.928294
       },
@@ -523,6 +565,7 @@ export class RestRouteProvider {
         time: "4s",
         endtime: "36s",
         title: "1850",//C19 house
+        tr_title: "1850",
         lat: 40.9939654,
         long:  28.9253866
       },
@@ -531,6 +574,7 @@ export class RestRouteProvider {
         time: "41s",
         endtime: "1m13s",
         title: "1920",//French style buildings
+        tr_title: "1920",
         lat: 40.9937366,
         long: 28.9249731
       },
@@ -539,6 +583,7 @@ export class RestRouteProvider {
         time: "51s",
         endtime: "1m37s",
         title: "1960",//Tramway
+        tr_title: "1960",
         lat: 40.994382,
         long: 28.923939
       },{
@@ -546,6 +591,7 @@ export class RestRouteProvider {
         time: "1m16s",
         endtime: "1m37s",
         title: "1965",//Wooden house
+        tr_title: "1965",
         lat: 40.996006,
         long:  28.929395
       },
@@ -554,6 +600,7 @@ export class RestRouteProvider {
         time: "4m48s",
         endtime: "5m17s",
         title: "1994",//Shut gates
+        tr_title: "1994",
         lat: 40.994962,
         long: 28.929245
       },{
@@ -561,6 +608,7 @@ export class RestRouteProvider {
         time: "3m30s",
         endtime: "4m08s",
         title: "2015",//Train
+        tr_title: "2015",
         lat: 40.994116,
         long:  28.927661
       }]
@@ -573,6 +621,7 @@ export class RestRouteProvider {
           time: "12m40s",
           endtime: "12m50s",
           title: "350",//Triumphal arch
+          tr_title: "350",
           lat: 40.993953,
           long: 28.922068
         },
@@ -580,7 +629,8 @@ export class RestRouteProvider {
         vimeoID: "252328882",
         time: "14m39s",
         endtime: "14m47s",
-        title: "450",//Military architesture
+        title: "450",//Military architesture\
+        tr_title: "450",
         lat: 40.993916,
         long: 28.921822
       },
@@ -589,6 +639,7 @@ export class RestRouteProvider {
         time: "4m47s",
         endtime: "5m03s",
         title: "1500",//Fountain
+        tr_title: "1500",
         lat: 40.9943501,
         long: 28.9245686
       },
@@ -597,6 +648,7 @@ export class RestRouteProvider {
         time: "1m27s",
         endtime: "1m37s",
         title: "1475",//Fortress
+        tr_title: "1475",
         lat: 40.9935984,
         long: 28.9240384
       },
@@ -605,6 +657,7 @@ export class RestRouteProvider {
         time: "2m59s",
         endtime: "3m10s",
         title: "1958",//Restoration
+        tr_title: "1958",
         lat: 40.993495,
         long: 28.924312
       },
@@ -613,6 +666,7 @@ export class RestRouteProvider {
         time: "9m20s",
         endtime: "9m56s",
         title: "2009",//Stolen eagle
+        tr_title: "2009",
         lat: 40.994068,
         long: 28.922523
       },
@@ -621,6 +675,7 @@ export class RestRouteProvider {
         time: "10m33s",
         endtime: "11m37s",
         title: "2009",//Stolen eagle
+        tr_title: "2009",
         lat: 40.994202,
         long: 28.922075
       }]
@@ -633,6 +688,7 @@ export class RestRouteProvider {
         time: "6m07s",
         endtime: "6m17s",
         title: "1300",//Bazaar
+        tr_title: "1300",
         lat: 40.994365,
         long: 28.924365
       },
@@ -641,6 +697,7 @@ export class RestRouteProvider {
         time: "6m07s",
         endtime: "6m17s",
         title: "1300",//Shop salhane<
+        tr_title: "1300",
         lat: 40.994363,
         long: 28.924363
       },
@@ -649,6 +706,7 @@ export class RestRouteProvider {
         time: "7m58",
         endtime: "8m29s",
         title: "1924",//Shop
+        tr_title: "1924",
         lat: 40.994698,
         long: 28.925359
       },
@@ -657,6 +715,7 @@ export class RestRouteProvider {
         time: "6m53s",
         endtime: "7m01s",
         title: "1955",//Vegetable
+        tr_title: "1955",
         lat: 40.993876,
         long: 28.927039
       },
@@ -665,16 +724,49 @@ export class RestRouteProvider {
         time: "2s",
         endtime: "9s",
         title: "1961",//Pastry shop
+        tr_title: "1961",
         lat: 40.996388,
         long: 28.927519
       }]
     }
   ];
 
+  rawSounds : any[] = [
+    {
+      name : "Food and Shops",
+      points: [
+      {
+        soundID: "252328882",
+        time: "6m07s",
+        endtime: "6m17s",
+        title: "1300",//Bazaar
+        lat: 40.994365,
+        long: 28.924365
+      },{
+        soundID: "252328882",
+        time: "6m07s",
+        endtime: "6m17s",
+        title: "TEST",//Bazaar
+        lat: 41.013325,
+        long: 28.978737
+      }
+     ]
+    }
+  ];
+
+
   constructor(private http: HttpClient) {
     console.log('Hello RestRouteProvider Provider');
   }
 
+  public getLanguage():string{
+    return this.pageLanguage.getValue();
+  }
+
+  public setLanguage(language:string){
+    this.pageLanguage.next(language);
+  }
+  
   public setRoute(page : number, tour : number){
     console.log(this.getRoutePageNumber());
     if (this.getRoutePageNumber()!=page){
@@ -710,8 +802,11 @@ export class RestRouteProvider {
     return this.rawRouteTime;
   }
 
+  public getAllSounds(){
+    return this.rawSounds;
+  }
+
   public getJSONsubs(name:string): Observable<any> {
     return this.http.get("./assets/subs/"+name+".json")
   }
-
 }

@@ -1,5 +1,26 @@
 page-intro {
+    h5{
+        margin-bottom: 5px;
+    }
+    h6{
+        margin-top: 5px;
+    }
     .button-round-md {
         color: black;
+        text-transform: none;
+        padding: 10px 20px;
+        height: 60px;
+        border-radius: 14px;
+    }
+
+    .button-inner{
+        display: block;
+    }
+    .title{
+
+    }
+    
+    .description{
+        font-weight: 400;
     }
 }

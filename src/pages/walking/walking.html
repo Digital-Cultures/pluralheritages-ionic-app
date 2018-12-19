@@ -4,7 +4,8 @@
       <ion-icon name="menu"></ion-icon>
     </button>
     <ion-title *ngIf="restRouteProvider.getRoutePageNumber()==1">Walking Back in Time</ion-title>
-    <ion-title *ngIf="restRouteProvider.getRoutePageNumber()==2">Walking with {{tourGuide}}</ion-title>
+    <ion-title *ngIf="restRouteProvider.getRoutePageNumber()==2">A Walk near the Walls {{tourGuide}}</ion-title>
+    <ion-title *ngIf="restRouteProvider.getRoutePageNumber()==3">Vantage Point</ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -16,12 +17,12 @@
 
     <div *ngFor="let mapLabel of mapLabels">
       <!-- <button [style.top.px]=mapLabel.point.top [style.left.px]=mapLabel.point.left style="position: fixed;" ion-button (click)="mapLabel.action($event)">{{mapLabel.title}}</button> -->
-      <button  [hidden]="!mapLabel.visible" [style.top.px]=mapLabel.point.top [style.left.px]=mapLabel.point.left style="position: fixed;" ion-button [ngClass]="{ 'grey': !mapLabel.selected, 'white': mapLabel.swapTourAllowed, 'red': mapLabel.redColor}" (click)="playVideo(mapLabel.vimeo,mapLabel.time,mapLabel.endtime,mapLabel.title)">{{mapLabel.title}}</button>
+        <button  [hidden]="!mapLabel.visible" [style.top.px]=mapLabel.point.top [style.left.px]=mapLabel.point.left style="position: fixed;" ion-button [ngClass]="{ 'grey': !mapLabel.selected, 'white': mapLabel.swapTourAllowed, 'red': mapLabel.redColor}" (click)="playVideo(mapLabel.vimeo,mapLabel.time,mapLabel.endtime,mapLabel.title)">{{(languge=='en') ? mapLabel.title : mapLabel.tr_title}}</button>
     </div>
       
     <div>
       <!--<button [style.top.px]=mapLocationMarker.top [style.left.px]=mapLocationMarker.left style="position: fixed;" ion-button >here</button> -->
-      <div [style.top.px]=mapLocationMarker.top [style.left.px]=mapLocationMarker.left style="position: fixed;">
+      <div [hidden]="mapLocationMarker.top==0" [style.top.px]=mapLocationMarker.top [style.left.px]=mapLocationMarker.left style="position: fixed; width: 100px;">
         <lottie-animation-view [options]="markerAnimationOption"></lottie-animation-view>
       </div>
     </div>
@@ -51,6 +52,6 @@
       </div>
     </div>
   </div>
-  <div class="footerGuide"><i>WALK TO A MARKER TO LISTEN</i></div>
+  <div class="footerGuide" [hidden]="restRouteProvider.getRoutePageNumber()==3" ><i>WALK TO A MARKER TO LISTEN</i></div>
   <button class="footerSwapTour" [hidden]="!swapTour" (click)="changeTour(swapTourID)"><i>{{footerSwapTourText}}</i></button>
 </ion-content>
