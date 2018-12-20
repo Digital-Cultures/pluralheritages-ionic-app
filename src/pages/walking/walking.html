@@ -3,9 +3,9 @@
     <button ion-button menuToggle>
       <ion-icon name="menu"></ion-icon>
     </button>
-    <ion-title *ngIf="restRouteProvider.getRoutePageNumber()==1">Walking Back in Time</ion-title>
-    <ion-title *ngIf="restRouteProvider.getRoutePageNumber()==2">A Walk near the Walls {{tourGuide}}</ion-title>
-    <ion-title *ngIf="restRouteProvider.getRoutePageNumber()==3">Vantage Point</ion-title>
+    <ion-title *ngIf="restRouteProvider.getRoutePageNumber()==1">{{ 'WALKING-BACK-TITLE' | translate }}</ion-title>
+    <ion-title *ngIf="restRouteProvider.getRoutePageNumber()==2">{{ 'WALK-NEAR-TITLE' | translate }} {{tourGuide}}</ion-title>
+    <ion-title *ngIf="restRouteProvider.getRoutePageNumber()==3">{{ 'VANTAGE-TITLE' | translate }}</ion-title>
   </ion-navbar>
 </ion-header>
 
@@ -17,7 +17,7 @@
 
     <div *ngFor="let mapLabel of mapLabels">
       <!-- <button [style.top.px]=mapLabel.point.top [style.left.px]=mapLabel.point.left style="position: fixed;" ion-button (click)="mapLabel.action($event)">{{mapLabel.title}}</button> -->
-        <button  [hidden]="!mapLabel.visible" [style.top.px]=mapLabel.point.top [style.left.px]=mapLabel.point.left style="position: fixed;" ion-button [ngClass]="{ 'grey': !mapLabel.selected, 'white': mapLabel.swapTourAllowed, 'red': mapLabel.redColor}" (click)="playVideo(mapLabel.vimeo,mapLabel.time,mapLabel.endtime,mapLabel.title)">{{(languge=='en') ? mapLabel.title : mapLabel.tr_title}}</button>
+        <button  [hidden]="!mapLabel.visible" [style.top.px]=mapLabel.point.top [style.left.px]=mapLabel.point.left style="position: fixed;" ion-button [ngClass]="{ 'grey': !mapLabel.selected, 'white': mapLabel.swapTourAllowed, 'red': mapLabel.redColor}" (click)="playVideo(mapLabel.vimeo,mapLabel.time,mapLabel.endtime,mapLabel.title)">{{(language=='en') ? mapLabel.title : mapLabel.tr_title}}</button>
     </div>
       
     <div>
@@ -41,17 +41,17 @@
   <div *ngIf="showVideoPlay" class="modal">
     <div class="holder">
       <div class="closeBtn" (click)="closeVideo()"><img src="assets/imgs/close.png" /></div>
-      <img class="userIcon" src="assets/imgs/user.png" />
-      <h2>{{tourGuide}}</h2>
-      <h5>{{pointTitle}}</h5>
+      <img class="userIcon" src="{{restRouteProvider.getRoutePageNumber()==2 ? 'assets/imgs/user.png' : 'assets/imgs/time.png'}}" />
+      <h2 [ngClass]="(restRouteProvider.getRoutePageNumber()==2 ? 'orange-txt' : 'red-txt')">{{restRouteProvider.getRoutePageNumber()==2 ? tourGuide : pointTitle}}</h2>
+      <h5>{{restRouteProvider.getRoutePageNumber()==2 ? pointTitle : tourGuide }}</h5>
       <h5>--</h5>
-      <h5 style="font-style: italic;">"{{subtitleText}}"</h5>
+      <h5 style="font-style: italic;" *ngIf="subtitleText!=''">"{{subtitleText}}"</h5>
       <div class="videoHolder">
-        <div class="video" [innerHtml]="iframe_html"></div>
-        <img class="minimise" src="assets/imgs/minimise.png" />
+        <div class="video" [hidden]="minimised" [innerHtml]="iframe_html"></div>
+        <img class="minimise" src="{{minimised ? 'assets/imgs/maximise.png' : 'assets/imgs/minimise.png'}}" (click)="hideVideo()"/>
       </div>
     </div>
   </div>
-  <div class="footerGuide" [hidden]="restRouteProvider.getRoutePageNumber()==3" ><i>WALK TO A MARKER TO LISTEN</i></div>
+  <div class="footerGuide" [hidden]="restRouteProvider.getRoutePageNumber()==3" ><i>{{ 'PROMPT' | translate }}</i></div>
   <button class="footerSwapTour" [hidden]="!swapTour" (click)="changeTour(swapTourID)"><i>{{footerSwapTourText}}</i></button>
 </ion-content>

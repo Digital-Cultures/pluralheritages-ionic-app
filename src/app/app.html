@@ -6,19 +6,19 @@
 <ion-menu [content]="content">
     <ion-header>
       <ion-toolbar>
-        <ion-title>Menu</ion-title>
+        <ion-title>{{ 'TITLE' | translate }}</ion-title>
       </ion-toolbar>
     </ion-header>
   
     <ion-content>
-    <ion-title>{{ 'TITLE' | translate }}</ion-title>
+    <!-- <ion-title>{{ 'TITLE' | translate }}</ion-title> -->
       <ion-list>
           <ion-row >
             <!-- Parent Pages  -->
             <ion-col col-12 class="menu-name" (click)="openPage(pages[0], 0, false)">
               <ion-item>
                 <span ion-text>
-                  {{pages[0].title}}
+                  {{pages[0].title | translate}}
                 </span>
               </ion-item>
             </ion-col>
@@ -28,8 +28,8 @@
             <!-- Parent Pages  -->
             <ion-col  *ngIf="i==pageID && i!=0" col-12 class="menu-name" (click)="openPage(p, i, false)">
               <ion-item>
-                <span ion-text>
-                  {{p.title}}
+                <span ion-text class="title">
+                  {{p.title | translate}}
                   <ion-icon [name]="arrow-down" *ngIf="p.subPages" float-right></ion-icon>
                 </span>
               </ion-item>
@@ -37,7 +37,7 @@
               <!-- Child Pages  -->
               <ion-list radio-group >
                 <ion-item no-border no-lines *ngFor="let subPage of p.subPages; let j = index" text-wrap >
-                    <ion-label>{{subPage.title}}</ion-label>
+                    <ion-label>{{(language=='en') ? subPage.title : subPage.title_tr}}</ion-label>
                     <ion-radio id="{{i+' '+j}}" value="{{j}}" (ionSelect)="setRoute(i,j)" [checked]="selectedMenu == i && selectedWalk == j"></ion-radio>  
                   </ion-item>
                 </ion-list>
@@ -47,10 +47,10 @@
 
       <ion-segment color="primary" (ionChange)="segmentChanged($event)">
         <ion-segment-button value="en">
-          English
+            {{'ENGLISH' | translate}}
         </ion-segment-button>
         <ion-segment-button value="tr">
-          Turkish
+            {{'TURKISH' | translate}}
         </ion-segment-button>
       </ion-segment>
 

@@ -1,14 +1,18 @@
 {
+  "HOME": "HOME",
+  "ENGLISH": "English",
+  "TURKISH": "Turkish",
   "TITLE": "PLURAL HERITAGES",
   "ABOUT-TITLE" : "About the project",
   "TITLE-LONG" : "PLURAL HERITAGES OF ISTANBUL:",
   "SUBTITLE" : "The Case of the Land Walls",
   "INTRO" : "Choose from 3 ways of experiencing the walls, told through the perspectives of local people. If you are in Istanbul you can follow the walking routes and find the stories as you go.",
-  "WALKING-BACK-TITLE" : "WALKING BACK IN TIME",
+  "WALKING-BACK-TITLE" : "Walking Back in Time",
   "WALKING-BACK-DESC" : "Follow a route that connects dates and events, <br>at street level",
-  "WALK-NEAR-TITLE" : "A WALK NEAR THE WALLS",
+  "WALK-NEAR-TITLE" : "A Walk near the Walls",
   "WALK-NEAR-DESC" : "Follow a walk, guided by a resident, <br>and told through themes of their story",
-  "VANTAGE-TITLE" : "VANTAGE POINT",
+  "VANTAGE-TITLE" : "Vantage Point",
   "VANTAGE-DESC" : "Look out from a set of locations along the wall <br>and experience the sounds of the past",
-  "MORE-INFO" : "‘Plural Heritages of Istanbul: the Case of the Land Walls’ was a research project led by Newcastle University, UK, with Istanbul Bilgi University and Bursa Uludağ University. It asked how communities give meaning to major heritage sites and what happens when such meanings are intertwined with histories of conflict and marginalisation, or are not officially recognised. Our project explored the ‘plural heritages’ of the Istanbul Land (‘Theodosian’) Walls and their environs. This 5th-Century CE UNESCO World Heritage site stretches over six kilometres through the city. The stories included in this app were produced by a participants to our research project and professional film producers in Istanbul.<br>For more info see: <a href='https://pluralheritages.ncl.ac.uk/'>pluralheritages.ncl.ac.uk</a>"
+  "MORE-INFO" : "‘Plural Heritages of Istanbul: the Case of the Land Walls’ was a research project led by Newcastle University, UK, with Istanbul Bilgi University and Bursa Uludağ University. It asked how communities give meaning to major heritage sites and what happens when such meanings are intertwined with histories of conflict and marginalisation, or are not officially recognised. Our project explored the ‘plural heritages’ of the Istanbul Land (‘Theodosian’) Walls and their environs. This 5th-Century CE UNESCO World Heritage site stretches over six kilometres through the city. The stories included in this app were produced by a participants to our research project and professional film producers in Istanbul.<br>For more info see: <a href='https://pluralheritages.ncl.ac.uk/'>pluralheritages.ncl.ac.uk</a>",
+  "PROMPT" : "WALK TO A MARKER TO LISTEN"
 }

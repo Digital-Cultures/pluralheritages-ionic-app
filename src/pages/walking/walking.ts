@@ -51,7 +51,7 @@ export class WalkingPage {
   subData: any;
   subEnd: number;
   vimeoSubText: string = "";
-  languge: string = "en";
+  language: string = "en";
 
   //video
   showVideoPlay = false;
@@ -61,6 +61,7 @@ export class WalkingPage {
   videoPlay: boolean = false;
   playingMarkerID: string;
   swapTourID: number;
+  minimised: boolean = false;
 
   //audio
   playing:boolean = false;
@@ -96,9 +97,11 @@ export class WalkingPage {
     this.nativeAudio.preloadComplex('uniqueId2', 'assets/sounds/ambient.mp3', 1, 1, 0).then((evt) => {console.log("sound loaded")}, (error: any) => console.log(error + " - load error message"));
     this.nativeAudio.preloadComplex('uniqueId3', 'assets/sounds/bgGame.mp3', 1, 1, 0).then((evt) => {console.log("sound loaded")}, (error: any) => console.log(error + " - load error message"));
 
+    
+    this.language = translate.currentLang;
     translate.onLangChange.subscribe((value) => {
         // value is our translated string
-        this.languge = value.lang;
+        this.language = value.lang;
         console.log(value.lang)
       });
   }
@@ -674,6 +677,34 @@ export class WalkingPage {
     this.showVideoPlay = true;
     this.pointTitle = title;
     this.iframe_html = this.embedService.embed(this.vimeoUrl + vimeoID, { hash: 't=' + time, query: { autoplay: 1 } });
+    
+    // this.player = new Player('embededvideo', {});
+    // this.player.enableTextTrack(this.language, 'subtitles').then((track) => {
+    //   // track.language = the iso code for the language
+    //   // track.kind = 'captions' or 'subtitles'
+    //   // track.label = the human-readable label
+    //   console.log(track);
+    // }).catch((error) => {
+    //   console.log(error);
+    //   switch (error.name) {
+    //     case 'InvalidTrackLanguageError':
+    //       // no track was available with the specified language
+    //       break;
+    //     case 'InvalidTrackError':
+    //       // no track was available with the specified language and kind
+    //       break;
+    //     default:
+    //       // some other error occurred
+    //       break;
+    //   }
+    // });
+
+
+    // callMethod('enableTextTrack', {
+    //   language: language,
+    //   kind: kind
+    // });
+    
     this.playingMarkerID = pointID;
 
 
@@ -768,6 +799,10 @@ export class WalkingPage {
 
   closeVideo() {
     this.showVideoPlay = false;
+  }
+
+  hideVideo(){
+    this.minimised = !this.minimised;
   }
 
   onHeadingChange(mag: number) {

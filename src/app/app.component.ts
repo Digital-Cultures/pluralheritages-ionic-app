@@ -23,8 +23,8 @@ export class MyApp {
                   //      This avoids to face the plugin loading error.
 
   pages: Array<{title: string, component: any, subPages?: any }>;
-  walkSubPages: Array<{title: string, component: any }> = [];
-  walkTimeSubPages: Array<{title: string, component: any }> = [];
+  walkSubPages: Array<{title: string, title_tr: string, component: any }> = [];
+  walkTimeSubPages: Array<{title: string, title_tr: string, component: any }> = [];
   pageID: number = 0;
   routeID: number = 0;
   language: string = 'en';
@@ -61,21 +61,22 @@ export class MyApp {
 
       restRouteProvider.getAllRoutes();
       let allRoutesRaw = this.restRouteProvider.getAllRoutes();
-      
       for (let k = 0; k < allRoutesRaw.length; k++) {
-        this.walkSubPages.push({title: allRoutesRaw[k].name, component: WalkingPage})
+        this.walkSubPages.push({title: allRoutesRaw[k].name, title_tr: allRoutesRaw[k].name, component: WalkingPage})
       }
 
+      //compile all time tours
       let allTimeRoutesRaw = this.restRouteProvider.getAllTimeRoutes();
       for (let k = 0; k < allTimeRoutesRaw.length; k++) {
-        this.walkTimeSubPages.push({title: allTimeRoutesRaw[k].name, component: WalkingPage})
+        console.log(allRoutesRaw[k].name_tr);
+        this.walkTimeSubPages.push({title: allTimeRoutesRaw[k].name, title_tr: allTimeRoutesRaw[k].name_tr, component: WalkingPage})
       }
 
       this.pages = [
         { title: 'HOME', component: IntroPage },
-        { title: 'WALKING BACK IN TIME', component: WalkingPage, subPages: this.walkTimeSubPages },
-        { title: 'WALKING WITH...', component: WalkingPage, subPages: this.walkSubPages },
-        { title: 'VANTAGE POINT', component: WalkingPage, subPages: this.walkSubPages }
+        { title: 'WALKING-BACK-TITLE', component: WalkingPage, subPages: this.walkTimeSubPages },
+        { title: 'WALK-NEAR-TITLE', component: WalkingPage, subPages: this.walkSubPages },
+        { title: 'VANTAGE-TITLE', component: WalkingPage }
       ]
 
       this.restRouteProvider.route.subscribe(routeID => {
