@@ -17,7 +17,7 @@
 
     <div *ngFor="let mapLabel of mapLabels">
       <!-- <button [style.top.px]=mapLabel.point.top [style.left.px]=mapLabel.point.left style="position: fixed;" ion-button (click)="mapLabel.action($event)">{{mapLabel.title}}</button> -->
-        <button  [hidden]="!mapLabel.visible" [style.top.px]=mapLabel.point.top [style.left.px]=mapLabel.point.left style="position: fixed;" ion-button [ngClass]="{ 'grey': !mapLabel.selected, 'white': mapLabel.swapTourAllowed, 'red': mapLabel.redColor}" (click)="playVideo(mapLabel.vimeo,mapLabel.time,mapLabel.endtime,mapLabel.title)">{{(language=='en') ? mapLabel.title : mapLabel.tr_title}}</button>
+        <button  [hidden]="!mapLabel.visible" [style.top.px]=mapLabel.point.top [style.left.px]=mapLabel.point.left style="position: fixed;" ion-button [ngClass]="{ 'grey': !mapLabel.selected, 'white': mapLabel.swapTourAllowed, 'red': mapLabel.redColor}" (click)="playVideo(mapLabel.vimeo,mapLabel.time,mapLabel.endtime,mapLabel.title, mapLabel.tr_title, mapLabel.pointID)">{{(language=='en') ? mapLabel.title : mapLabel.tr_title}}</button>
     </div>
       
     <div>
@@ -43,7 +43,7 @@
       <div class="closeBtn" (click)="closeVideo()"><img src="assets/imgs/close.png" /></div>
       <img class="userIcon" src="{{restRouteProvider.getRoutePageNumber()==2 ? 'assets/imgs/user.png' : 'assets/imgs/time.png'}}" />
       <h2 [ngClass]="(restRouteProvider.getRoutePageNumber()==2 ? 'orange-txt' : 'red-txt')">{{restRouteProvider.getRoutePageNumber()==2 ? tourGuide : pointTitle}}</h2>
-      <h5>{{restRouteProvider.getRoutePageNumber()==2 ? pointTitle : tourGuide }}</h5>
+      <h5>{{restRouteProvider.getRoutePageNumber()==2 ? ((language=='en') ? pointTitle : pointTitle_tr) : ((language=='en') ? tourGuide : tourGuide_tr) }}</h5>
       <h5>--</h5>
       <h5 style="font-style: italic;" *ngIf="subtitleText!=''">"{{subtitleText}}"</h5>
       <div class="videoHolder">

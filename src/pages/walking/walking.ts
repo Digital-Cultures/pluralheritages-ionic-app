@@ -14,6 +14,7 @@ import {
 import { NativeAudio } from '@ionic-native/native-audio';
 import { point, polygon, destination, distance } from '@turf/turf';
 import { TranslateService } from '@ngx-translate/core';
+import Player from '@vimeo/player';
 
 import { EmbedVideoService } from 'ngx-embed-video';
 import { RestRouteProvider } from '../../providers/rest-route/rest-route';
@@ -45,13 +46,16 @@ export class WalkingPage {
   circleVariable: any;
   markerVariable: any[] = [undefined];
   tourGuide: string = "...";
+  tourGuide_tr: string = "...";
   pointTitle: string;
+  pointTitle_tr: string;
   subtitleText: string;
   subtitlePosition: number;
   subData: any;
   subEnd: number;
   vimeoSubText: string = "";
   language: string = "en";
+  private player;
 
   //video
   showVideoPlay = false;
@@ -62,6 +66,7 @@ export class WalkingPage {
   playingMarkerID: string;
   swapTourID: number;
   minimised: boolean = false;
+  vimeoLanguageSet:boolean = false;
 
   //audio
   playing:boolean = false;
@@ -102,6 +107,7 @@ export class WalkingPage {
     translate.onLangChange.subscribe((value) => {
         // value is our translated string
         this.language = value.lang;
+        this.vimeoLanguageSet = false;
         console.log(value.lang)
       });
   }
@@ -385,10 +391,12 @@ export class WalkingPage {
         // walking back in time
         allRoutesRaw = this.restRouteProvider.getAllTimeRoutes();
         this.tourGuide = allRoutesRaw[routeRaw].name;
+        this.tourGuide_tr = allRoutesRaw[routeRaw].name_tr;
       } else if (page==2){
         // tour
         allRoutesRaw = this.restRouteProvider.getAllRoutes();
         this.tourGuide = allRoutesRaw[routeRaw].name;
+        this.tourGuide_tr = allRoutesRaw[routeRaw].name;
       } else if (page==3){
         allRoutesRaw = [];
         sounds = this.restRouteProvider.getAllSounds();
@@ -555,6 +563,7 @@ export class WalkingPage {
                     tourID: k,
                     name: allRoutesRaw[k].name,
                     title: allRoutesRaw[k].points[i].title,
+                    tr_title: allRoutesRaw[k].points[i].tr_title,
                     point: { left: Math.floor(point[0].toFixed(1)), top: Math.floor(point[1].toFixed(1))-35 },
                     location: { lat: allRoutesRaw[k].points[i].lat, lng: allRoutesRaw[k].points[i].long },
                     vimeo: allRoutesRaw[k].points[i].vimeoID,
@@ -673,37 +682,11 @@ export class WalkingPage {
     this.restRouteProvider.setRoute(this.restRouteProvider.getRoutePageNumber(),tourID);
   }
 
-  public playVideo(vimeoID: string, time: string, endtime: string, title: string, pointID: string) {
+  public playVideo(vimeoID: string, time: string, endtime: string, title: string, title_tr: string, pointID: string) {
     this.showVideoPlay = true;
     this.pointTitle = title;
+    this.pointTitle_tr = title_tr;
     this.iframe_html = this.embedService.embed(this.vimeoUrl + vimeoID, { hash: 't=' + time, query: { autoplay: 1 } });
-    
-    // this.player = new Player('embededvideo', {});
-    // this.player.enableTextTrack(this.language, 'subtitles').then((track) => {
-    //   // track.language = the iso code for the language
-    //   // track.kind = 'captions' or 'subtitles'
-    //   // track.label = the human-readable label
-    //   console.log(track);
-    // }).catch((error) => {
-    //   console.log(error);
-    //   switch (error.name) {
-    //     case 'InvalidTrackLanguageError':
-    //       // no track was available with the specified language
-    //       break;
-    //     case 'InvalidTrackError':
-    //       // no track was available with the specified language and kind
-    //       break;
-    //     default:
-    //       // some other error occurred
-    //       break;
-    //   }
-    // });
-
-
-    // callMethod('enableTextTrack', {
-    //   language: language,
-    //   kind: kind
-    // });
     
     this.playingMarkerID = pointID;
 
@@ -776,12 +759,31 @@ export class WalkingPage {
     let doc = ifrm[0].contentDocument? ifrm[0].contentDocument: ifrm[0].contentWindow.document;
     // get reference to greeting text box in iframed document
     let fld = doc.getElementsByClassName("vp-captions");
-   
+    
+    this.setVimeoLanguage()
     this.vimeoSubText = "";
 
     if (fld.length>0){
       this.vimeoSubText = fld[0].textContent;
       this.subtitleText = this.vimeoSubText
+    }
+  }
+
+  setVimeoLanguage(){
+    if (!this.vimeoLanguageSet){
+      //make sure the subtitles are in the correct language   
+      this.player = new Player('embededvideo', {});
+
+      this.player.enableTextTrack(this.language).then(function(track) {
+        console.log(track.language);
+        // track.language;
+        // track.kind = 'captions' or 'subtitles'
+        // track.label = the human-readable label
+      }).catch(function(error) {
+          console.log(error);
+      });
+
+      this.vimeoLanguageSet = true;
     }
   }
 
@@ -894,7 +896,7 @@ export class WalkingPage {
         if (this.mapLabels[i].selected){
           if (this.vimeoClip != this.mapLabels[i].vimeo) {
             if(this.playingMarkerID != this.mapLabels[i].pointID){
-              this.playVideo(this.mapLabels[i].vimeo, this.mapLabels[i].time, this.mapLabels[i].endtime, this.mapLabels[i].title, this.mapLabels[i].pointID);
+              this.playVideo(this.mapLabels[i].vimeo, this.mapLabels[i].time, this.mapLabels[i].endtime, this.mapLabels[i].title, this.mapLabels[i].tr_title, this.mapLabels[i].pointID);
             }
           }
         }else{
