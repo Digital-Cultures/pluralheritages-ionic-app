@@ -1,9 +1,6 @@
 ---
 title: Soaking in the history
-description: Audio player based on compass direction
 ---
-
-# cordova-plugin-device-orientation
 
 ------
 
