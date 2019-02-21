@@ -41,8 +41,8 @@
   <div *ngIf="showVideoPlay" class="modal">
     <div class="holder">
       <div class="closeBtn" (click)="closeVideo()"><img src="assets/imgs/close.png" /></div>
-      <img class="userIcon" src="{{restRouteProvider.getRoutePageNumber()==2 ? 'assets/imgs/user.png' : 'assets/imgs/time.png'}}" />
-      <h2 [ngClass]="(restRouteProvider.getRoutePageNumber()==2 ? 'orange-txt' : 'red-txt')">{{restRouteProvider.getRoutePageNumber()==2 ? tourGuide : pointTitle}}</h2>
+      <img class="userIcon" src="{{restRouteProvider.getRoutePageNumber()==2 ? 'assets/imgs/user.png' : restRouteProvider.getRoutePageNumber()==1 ? 'assets/imgs/time.png' : 'assets/imgs/compass.png' }}" />
+      <h2 [ngClass]="(restRouteProvider.getRoutePageNumber()==1 ? 'red-txt' : 'orange-txt')">{{restRouteProvider.getRoutePageNumber()==2 ? tourGuide : pointTitle}}</h2>
       <h5>{{restRouteProvider.getRoutePageNumber()==2 ? ((language=='en') ? pointTitle : pointTitle_tr) : ((language=='en') ? tourGuide : tourGuide_tr) }}</h5>
       <h5>--</h5>
       <h5 style="font-style: italic;" *ngIf="subtitleText!=''">"{{subtitleText}}"</h5>

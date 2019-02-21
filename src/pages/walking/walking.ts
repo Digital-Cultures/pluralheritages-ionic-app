@@ -8,11 +8,10 @@ import {
   GoogleMap,
   GoogleMapsEvent,
   ILatLng,
-  LatLngBounds,
-  CameraPosition
+  LatLngBounds
 } from '@ionic-native/google-maps';
 import { NativeAudio } from '@ionic-native/native-audio';
-import { point, polygon, destination, distance } from '@turf/turf';
+import { point, bearing, distance } from '@turf/turf';
 import { TranslateService } from '@ngx-translate/core';
 import Player from '@vimeo/player';
 
@@ -37,6 +36,7 @@ export class WalkingPage {
   target: any;
   tilt: number = 0;
   zoom: number = 17;
+  mapAnimationLock: boolean = true;
   markersAdded: any[] = [];
   locationFix: boolean = false;
   polygonOptions: any;
@@ -68,9 +68,6 @@ export class WalkingPage {
   minimised: boolean = false;
   vimeoLanguageSet:boolean = false;
 
-  //audio
-  playing:boolean = false;
-
   mapLocationMarker: {top:number,left:number} = {top:0,left:0};
   markerAnimationOption = {
     loop: true,
@@ -93,15 +90,12 @@ export class WalkingPage {
     private screenOrientation: ScreenOrientation,
     private embedService: EmbedVideoService,
     public restRouteProvider: RestRouteProvider,
-    private nativeAudio: NativeAudio,
     public translate: TranslateService
   ) {
     this.screenOrientation.lock(this.screenOrientation.ORIENTATIONS.PORTRAIT);
     this.locationFix = false;
     this.polygonLoaded = false;
-    this.nativeAudio.preloadComplex('uniqueId2', 'assets/sounds/ambient.mp3', 1, 1, 0).then((evt) => {console.log("sound loaded")}, (error: any) => console.log(error + " - load error message"));
-    this.nativeAudio.preloadComplex('uniqueId3', 'assets/sounds/bgGame.mp3', 1, 1, 0).then((evt) => {console.log("sound loaded")}, (error: any) => console.log(error + " - load error message"));
-
+ 
     
     this.language = translate.currentLang;
     translate.onLangChange.subscribe((value) => {
@@ -114,19 +108,6 @@ export class WalkingPage {
 
   ionViewDidLoad() {
     this.loadMap();
-
-    // this.listenerFn = this.renderer.listen('window', 'deviceorientation', (evt) => {
-    //   this.event = evt;
-    //   this.deviceOrientation.getCurrentHeading().then(
-    //     (data1: DeviceOrientationCompassHeading) => {
-    //       this.magneticHeading = data1.magneticHeading;
-    //       this.map.setCameraBearing(this.magneticHeading);
-    //     },
-    //     (error: any) => console.log(error + " - error message")
-    //   );
-    // });
-
-
   }
 
   loadMap() {
@@ -380,124 +361,46 @@ export class WalkingPage {
     this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
       this.mapReady = true;
 
-
       let routeRaw:number = this.restRouteProvider.getRouteNumber();
-
       let page:number = this.restRouteProvider.getRoutePageNumber();
 
       let allRoutesRaw;
-      let sounds;
+      //let sounds;
+
       if (page==1){
         // walking back in time
         allRoutesRaw = this.restRouteProvider.getAllTimeRoutes();
         this.tourGuide = allRoutesRaw[routeRaw].name;
         this.tourGuide_tr = allRoutesRaw[routeRaw].name_tr;
+        this.map.setOptions({gestures: {scroll: true}});
+
       } else if (page==2){
         // tour
         allRoutesRaw = this.restRouteProvider.getAllRoutes();
         this.tourGuide = allRoutesRaw[routeRaw].name;
         this.tourGuide_tr = allRoutesRaw[routeRaw].name;
+        this.map.setOptions({gestures: {scroll: true}});
+
       } else if (page==3){
+        //sounds
         allRoutesRaw = [];
-        sounds = this.restRouteProvider.getAllSounds();
+        //sounds = this.restRouteProvider.getAllSounds();
         this.target = {lat: 40.996635, lng: 28.928335};
         this.zoom = 19;
         this.tilt = 90;
         
+        this.map.setOptions({gestures: {scroll: false}});
+        
         var subscription = this.deviceOrientation.watchHeading().subscribe(
-          (data: DeviceOrientationCompassHeading) => this.map.setCameraBearing(data.trueHeading)
+          (data: DeviceOrientationCompassHeading) => {
+            this.map.setCameraBearing(data.trueHeading)
+            this.magneticHeading = data.trueHeading;
+          }
         );
       }
         
 
-      for (let k = 0; k < allRoutesRaw.length; k++) {
-        // non-selected route
-        if (k!=routeRaw){
-          let path = [];
-          for (let i = 0; i < allRoutesRaw[k].path.length; i++) {
-            path.push({ "lat": allRoutesRaw[k].path[i][1], "lng": allRoutesRaw[k].path[i][0] })
-          }
-
-          this.map.addPolyline({
-            points: path,
-            //'width': 5,
-            width: 4,
-            color: '#AAAAAA'
-          });
-        }
-      }
-
-      //add selected polygon on top
-      for (let k = 0; k < allRoutesRaw.length; k++) {
-  
-        if (k==routeRaw){
-          let path = [];
-          for (let i = 0; i < allRoutesRaw[k].path.length; i++) {
-            path.push({ "lat": allRoutesRaw[k].path[i][1], "lng": allRoutesRaw[k].path[i][0] })
-          }
-
-          //different coloured lines
-          if (page==1){
-            this.map.addPolyline({
-              points: path,
-              //'width': 5,
-              width: 4,
-              color: 'rgb(255, 81, 50)'
-            });
-          } else if (page==2){
-            this.map.addPolyline({
-              points: path,
-              //'width': 5,
-              width: 4,
-              color: '#FFA042'
-            });
-          } 
-
-          // set zoom too for selected path
-          this.target = new LatLngBounds(path);
-        }
-      }
-
-      // for (let k = 0; k < sounds.length; k++) {
-
-      // }
-      
-      this.map.moveCamera({
-        'target': this.target,
-        'tilt': this.tilt,
-        'zoom': this.zoom
-      });
-     
-      this.updateLabelPosition();
-
-      // if (page==3){
-      //   setInterval(() => {
-      //     if (Math.round(this.magneticHeading) != this.map.getCameraBearing()) {
-      //       //this.map.setCameraBearing(this.magneticHeading);
-      //       //this.rotateMap(this.magneticHeading);
-      //       //this.onHeadingChange(this.magneticHeading);
-      //     }
-      //   }, 50);
-      // }
-      
-      // let myLocation = point([this.location.lng, this.location.lat]);
-      // let targetLocation = point([allRoutesRaw[routeRaw].path[0][0], allRoutesRaw[routeRaw].path[0][1]]);
-      // // if the distance is less than 40K zoom to your location
-      // if (distance(myLocation, targetLocation)<40){
-      //else if(page!=3){
-        setTimeout(()  =>{
-          this.map.animateCamera({
-            target: {lat: this.location.lat, lng: this.location.lng},
-            //zoom: 17,
-            //tilt: this.tilt,
-            //bearing: 140,
-            duration: 5000
-          });
-        }, 5000);
-        
-      // }
-
-
+      //set up listeners
       this.geolocation.watchPosition({ maximumAge: 3000, timeout: 5000, enableHighAccuracy: true }).subscribe(position => {
         this.updateLocation(position);
         this.distanceToMarker();
@@ -515,6 +418,103 @@ export class WalkingPage {
         this.updateLabelPosition();
         this.updateLocationMarker();
       });
+
+
+      if (page!=3){
+        // add background polygons
+        for (let k = 0; k < allRoutesRaw.length; k++) {
+          // non-selected route
+          if (k!=routeRaw){
+            let path = [];
+            for (let i = 0; i < allRoutesRaw[k].path.length; i++) {
+              path.push({ "lat": allRoutesRaw[k].path[i][1], "lng": allRoutesRaw[k].path[i][0] })
+            }
+
+            this.map.addPolyline({
+              points: path,
+              //'width': 5,
+              width: 4,
+              color: '#AAAAAA'
+            });
+          }
+        }
+
+        //add selected polygon on top
+        for (let k = 0; k < allRoutesRaw.length; k++) {
+
+          if (k==routeRaw){
+            let path = [];
+            for (let i = 0; i < allRoutesRaw[k].path.length; i++) {
+              path.push({ "lat": allRoutesRaw[k].path[i][1], "lng": allRoutesRaw[k].path[i][0] })
+            }
+
+            //different coloured lines
+            if (page==1){
+              this.map.addPolyline({
+                points: path,
+                //'width': 5,
+                width: 4,
+                color: 'rgb(255, 81, 50)'
+              });
+              // set zoom too for selected path
+              this.target = new LatLngBounds(path);
+
+            } else if (page==2){
+              this.map.addPolyline({
+                points: path,
+                //'width': 5,
+                width: 4,
+                color: '#FFA042'
+              });
+
+              // set zoom too for selected path
+              this.target = new LatLngBounds(path);
+            
+            } 
+          }
+        }
+      }
+      
+      
+      //giva a preview of area
+      this.map.moveCamera({
+        'target': this.target,
+        'tilt': this.tilt,
+        'zoom': this.zoom
+      });
+     
+   
+      if (page==3){
+        setInterval(() => {
+          if (Math.round(this.magneticHeading) != this.map.getCameraBearing()) {
+            //this.map.setCameraBearing(this.magneticHeading);
+            //this.rotateMap(this.magneticHeading);
+            this.onHeadingChange(this.magneticHeading);
+          }
+        }, 50);
+      }
+      
+      // let myLocation = point([this.location.lng, this.location.lat]);
+      // let targetLocation = point([allRoutesRaw[routeRaw].path[0][0], allRoutesRaw[routeRaw].path[0][1]]);
+      // // if the distance is less than 40K zoom to your location
+      // if (distance(myLocation, targetLocation)<40){
+      //else if(page!=3){
+        setTimeout(()  =>{
+          this.map.animateCamera({
+            target: {lat: this.location.lat, lng: this.location.lng},
+            //zoom: 17,
+            //tilt: this.tilt,
+            //bearing: 140,
+            duration: 5000
+          });
+
+        }, 5000);
+        
+        //hacky way to remove the lock on the map
+        setTimeout(()  =>{
+          this.mapAnimationLock = false;
+          this.distanceToMarker();
+        }, 11000);
 
     });
   }
@@ -614,45 +614,16 @@ export class WalkingPage {
         for (let k=0; k<allRoutesRaw.length; k++){        
           if (allRoutesRaw[k].points) {            
             for (let i = 0; i < allRoutesRaw[k].points.length; i++) {
-              let marker =  this.map.addMarker({position:{lat: allRoutesRaw[k].points[i].lat, lng: allRoutesRaw[k].points[i].long}, title: allRoutesRaw[k].points[i].title})
+              let marker =  this.map.addMarker({
+                position:{lat: allRoutesRaw[k].points[i].lat, lng: allRoutesRaw[k].points[i].long}, 
+                title: allRoutesRaw[k].points[i].title,
+                icon: {url: 'assets/imgs/blank.png', size: {width: 35,height: 50}}
+              })
 
               this.markersAdded.push(marker);
             }
           }
         } 
-      }
-      // calculate distance to marker
-      if (this.location != null){
-        for (let k=0; k<allRoutesRaw.length; k++){        
-          if (allRoutesRaw[k].points) {            
-            for (let i = 0; i < allRoutesRaw[k].points.length; i++) {
-  
-              let myLocation = point([this.location.lng, this.location.lat]);
-              let targetLocation = point([allRoutesRaw[k].points[i].long, allRoutesRaw[k].points[i].lat]);
-  
-              //distance in meters
-              let distanceToPoint = Math.round(distance(myLocation, targetLocation) * 1000);
-              
-              if (distanceToPoint < 50){
-                if(!this.playing){
-                  //play sound
-                  this.nativeAudio.play('uniqueId2',() => { this.playing = false; console.log("sound played")} )
-                    .then(() => {console.log("sound started")}, 
-                    (error: any) => console.log(error + " - error message"));
-
-                    setTimeout(()  =>{
-                      this.nativeAudio.play('uniqueId3',() => { this.playing = false; console.log("sound played 3")} )
-                      .then(() => {console.log("sound started 3")}, 
-                      (error: any) => console.log(error + " - error message 3"));
-                    }, 1000);
-                 
-                    
-                  this.playing = true;
-                }
-              }
-            }
-          }
-        }
       }
     }
   }
@@ -670,6 +641,7 @@ export class WalkingPage {
       this.timelineLabels.push(earliestDate+(i*yearsPerMarker));
     }
   }
+
   updateLocationMarker() {
     if (this.locationFix) {
       this.map.fromLatLngToPoint({ lat: this.location.lat, lng: this.location.lng }).then((point: any[]) => {
@@ -683,6 +655,11 @@ export class WalkingPage {
   }
 
   public playVideo(vimeoID: string, time: string, endtime: string, title: string, title_tr: string, pointID: string) {
+    //minimise if page 3 
+    if (this.restRouteProvider.getRoutePageNumber()==3){
+      this.minimised = true;
+    }
+
     this.showVideoPlay = true;
     this.pointTitle = title;
     this.pointTitle_tr = title_tr;
@@ -699,7 +676,6 @@ export class WalkingPage {
     }else{
       startTime = Number(timeArray[0])*1000;
     }
-    console.log(startTime);
 
     let timeEndArray = endtime.split('s')[0].split('m');
     let endTime: number = 0;
@@ -709,37 +685,8 @@ export class WalkingPage {
       endTime = Number(timeEndArray[0])*1000;
     }
 
-    this.restRouteProvider.getJSONsubs(this.tourGuide).subscribe(data => {
-      console.log(time+"  -   "+endtime);
-      //
-      this.subData = data;
-
-      for (let i=0; this.subData.start.length; i++){
-
-        if (startTime >= this.subData.start[i]){
-          this.subtitlePosition = i;
-        }
-        if (endTime <= this.subData.end[i]){
-          this.subEnd = i;
-          break;
-        }
-      }
-      
-      //display first subtitle from json
-     /*
-     this.subtitleText = this.subData.text[this.subtitlePosition];
-      
-      setTimeout(()  =>{
-        this.nextSubtitle();
-      }, this.subData.end[this.subtitlePosition]-this.subData.start[this.subtitlePosition]);
-      */
-    },
-    error => console.log(error));
-
     //get subtitles from vimeo
     this.vimeoSubtitle();
-
-    console.log(this.subData.end[this.subtitlePosition]-this.subData.start[this.subtitlePosition]);
 
     //close modal
     setTimeout(()  =>{
@@ -808,62 +755,7 @@ export class WalkingPage {
   }
 
   onHeadingChange(mag: number) {
-
-    if (this.locationFix) {
-      this.mapAnimating = true;
-
-      // let newPoints = this.rotatePolygon(this.GORYOKAKU_POINTS, this.location, Math.round(mag)*-1);
-
-      let startPoint = point([this.location.lat, this.location.lng]);
-      let distance = 0.2;
-      let northBearing = mag * -1;
-
-      let endPoint = destination(startPoint, distance, Math.round(northBearing) + 70);
-      let endPoint2 = destination(startPoint, distance, Math.round(northBearing) + 110);
-
-      let newPoints: ILatLng[] = [
-        { lat: startPoint.geometry.coordinates[0], lng: startPoint.geometry.coordinates[1] },
-        { lat: endPoint.geometry.coordinates[0], lng: endPoint.geometry.coordinates[1] },
-        { lat: endPoint2.geometry.coordinates[0], lng: endPoint2.geometry.coordinates[1] },
-        { lat: startPoint.geometry.coordinates[0], lng: startPoint.geometry.coordinates[1] }
-      ];
-
-      /*
-             //Circle overlay
-             var center = [startPoint.geometry.coordinates[0], startPoint.geometry.coordinates[1]];
-             var radius = 0.02;
-             //var options = {steps: 10, units: 'kilometers'};
-             var circlePoints = circle(center, radius, {steps: 10, units: 'kilometers'});
-       
-             console.log(circlePoints);
-       
-             let newCirclePoints: ILatLng[] = [];
-             circlePoints.geometry.coordinates[0].forEach( point => {
-               newPoints.push({ lat: point[0], lng: point[1] });
-             });
-        */
-
-      this.polygonOptions = {
-        'points': newPoints,
-        'fillColor': '#FFA042',
-        'fillOpacity': 0.1,
-        'strokeWidth': 0
-      };
-
-      //if it exhists update point 
-
-      if (this.polygonView) {
-        this.polygonView.setPoints(newPoints);
-      } else {
-        this.map.addPolygon(this.polygonOptions).then((marker) => {
-          this.polygonView = marker;
-        });
- //       this.polygonLoaded = true;
-      }
-
-      this.showVideoPlay = false;
-
-    }
+    this.checkMarkerDirection();
   }
 
   updateLocation(position) {
@@ -878,7 +770,73 @@ export class WalkingPage {
     this.locationFix = true;
   }
 
+  checkMarkerDirection(){
+    if (this.restRouteProvider.getRoutePageNumber()!=3){
+      return;
+    }
+
+    let allRoutesRaw = this.restRouteProvider.getAllSounds();;
+  
+    if (!this.mapAnimationLock){
+      //update center poimt
+      this.map.moveCamera({'target': {lat: this.location.lat, lng: this.location.lng}});
+
+      // calculate distance to marker
+      if (this.location != null){
+        for (let k=0; k<allRoutesRaw.length; k++){        
+          if (allRoutesRaw[k].points) {            
+            for (let i = 0; i < allRoutesRaw[k].points.length; i++) {
+  
+              let myLocation = point([this.location.lng, this.location.lat]);
+              let targetLocation = point([allRoutesRaw[k].points[i].long, allRoutesRaw[k].points[i].lat]);
+  
+              //distance in meters
+              let distanceToPoint = Math.round(distance(myLocation, targetLocation) * 1000);
+              
+              if (distanceToPoint < 1000){
+
+                //are you looking at it?
+                let bearingToPoint = bearing(myLocation, targetLocation);
+
+                if(bearingToPoint<0) { 
+                  bearingToPoint = 360 + bearingToPoint;
+                }
+             
+                // if there is no video playing and you look at it
+                if(!this.showVideoPlay){
+
+                  if(this.isInbounds(this.magneticHeading, 20, bearingToPoint)){
+                    this.playVideo(allRoutesRaw[k].points[i].pointID, allRoutesRaw[k].points[i].time, allRoutesRaw[k].points[i].endtime, allRoutesRaw[k].points[i].title, allRoutesRaw[k].points[i].tr_title, allRoutesRaw[k].points[i].pointID);
+                  }
+                }
+
+                // if playing point and you look elsewhere
+                if(this.playingMarkerID==allRoutesRaw[k].points[i].pointID){
+                  if(this.showVideoPlay){
+                    if(!this.isInbounds(this.magneticHeading, 25, bearingToPoint)){
+                      this.closeVideo();
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  isInbounds(heading:number, tolerance:number, bearing:number):boolean{
+    
+    let normilise = 180 - heading;
+
+    return (( 180+tolerance > bearing+normilise ) && ( 180-tolerance < bearing+normilise));
+  }
+
   distanceToMarker() {
+    if (this.restRouteProvider.getRoutePageNumber()==3){
+      return;
+    }
 
     for (let i = 0; i < this.mapLabels.length; i++){
 
@@ -891,7 +849,7 @@ export class WalkingPage {
       //distance in meters
       let distanceToPoint = Math.round(distance(myLocation, targetLocation) * 1000);
 
-      if (distanceToPoint < 50) {
+      if (distanceToPoint < 15) {
   
         if (this.mapLabels[i].selected){
           if (this.vimeoClip != this.mapLabels[i].vimeo) {
@@ -899,7 +857,7 @@ export class WalkingPage {
               this.playVideo(this.mapLabels[i].vimeo, this.mapLabels[i].time, this.mapLabels[i].endtime, this.mapLabels[i].title, this.mapLabels[i].tr_title, this.mapLabels[i].pointID);
             }
           }
-        }else{
+        } else {
           this.mapLabels[i].swapTourAllowed = true;
           this.footerSwapTourText = "SWAP TO "+this.mapLabels[i].name+"s TOUR \n AND HEAR ABOUT "+this.mapLabels[i].title;
           this.swapTour = true;
@@ -921,6 +879,4 @@ export class WalkingPage {
     });
     return coords;
   }
-
-  
 }

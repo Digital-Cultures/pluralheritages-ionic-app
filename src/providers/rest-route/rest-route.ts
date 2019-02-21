@@ -736,24 +736,96 @@ export class RestRouteProvider {
 
   rawSounds : any[] = [
     {
-      name : "Food and Shops",
+      name : "Test",
       points: [
       {
-        soundID: "252328882",
+        pointID: "252328882",
         time: "6m07s",
         endtime: "6m17s",
-        title: "1300",//Bazaar
+        title: "point1",//Bazaar
+        tr_title: "point1_tr",//Bazaar
         lat: 40.994365,
         long: 28.924365
       },{
-        soundID: "252328882",
+        pointID: "252328882",
         time: "6m07s",
         endtime: "6m17s",
-        title: "TEST",//Bazaar
+        title: "point2",//Bazaar
+        tr_title: "point2_tr",//Bazaar
         lat: 41.013325,
         long: 28.978737
       }
      ]
+    },
+    {
+      lat:41.027714,
+      lon:28.933017,
+      name:"Sulukule",
+      name_tr:"Sulukule",
+      points:[
+        {
+          lat:41.029219,
+          long:28.935725,
+          pointID:"248009274",
+          title:"weddings and carriages",
+          tr_title: "düğünler ve küçük yük arabaları",
+          time:"0m50s",
+          endtime:"1m13s"
+        },
+        {
+          lat:41.026685, 
+          long:28.934437,
+          pointID:"248009274",
+          title:"Sulukule entertainment",
+          tr_title: "Sulukule eğlence",
+          time:"0m0s",
+          endtime:"0m14s"
+        },
+        {
+          lat:41.026740, 
+          long:28.931439,
+          pointID:"249540319",
+          title:"horses",
+          tr_title: "atlar",
+          time:"0m0s",
+          endtime:"0m51s"
+        }
+  
+      ]
+    },{
+      lat:40.993854,
+      lon:28.920472,
+      name:"Yedikule",
+      name_tr:"Yedikule",
+      points:[
+        {
+          lat:40.994082, 
+          long:28.923763,
+          pointID:"250433853",
+          title:"hymns",
+          tr_title: "ilahiler",
+          time:"0m33s",
+          endtime:"1m08s"
+        },
+        {
+          lat:40.994536, 
+          long:28.920132,
+          pointID:"254503531",
+          title:"gardens",
+          tr_title: "bahçeleri",
+          time:"0m33s",
+          endtime:"1m08s"
+        },
+        {
+          lat:40.995066, 
+          long:28.929341,
+          pointID:"252327628",
+          title:"trains",
+          tr_title: "trenler",
+          time:"0m23s",
+          endtime:"0m36s"
+        }
+      ]
     }
   ];
 

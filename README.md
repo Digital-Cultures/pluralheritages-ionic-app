@@ -22,5 +22,7 @@ $ ionic cordova build --release android
 
 jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore my-release-key.keystore platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk apptest
 
+use keystore password
+
 ~/Library/Android/sdk/build-tools/28.0.2/zipalign -v 4 /Users/danfostersmith/Documents/GitHub/soakinginhistory/platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk testApp.apk
 

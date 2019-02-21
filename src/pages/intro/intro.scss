@@ -1,9 +1,27 @@
 page-intro {
+    img{
+        display: flex;
+        justify-content: center;
+        -webkit-flex-align: center;
+        -ms-flex-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+        margin: auto;
+    }
     h5{
         margin-bottom: 5px;
+        text-align: center;
+        align-items: center;
+        color: #ffa042;
+        font-size: 27px;
+        font-family: 'Georgia';
+        font-weight: 700;
     }
     h6{
         margin-top: 5px;
+        text-align: center;
+        align-items: center;
+        color: #ffa042;
     }
     .button-round-md {
         color: black;
